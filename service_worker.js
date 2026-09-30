@@ -1,7 +1,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'strava-strike-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}v1`;
+const CACHE_NAME = `${CACHE_PREFIX}v2`;
 const APP_SHELL = ['./', './index.html', './assets/css/app.css', './assets/js/app.js', './assets/icon_192.png', './assets/icon_512.png', './manifest.webmanifest'];
 const STATIC_URLS = new Set(APP_SHELL.map((path) => new URL(path, self.registration.scope).href));
 
