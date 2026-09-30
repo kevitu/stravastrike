@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Urus Setia | STRAVA STRIKE KEVITU 2026</title>
+  <link rel="stylesheet" href="assets/css/admin.css">
+  <script src="assets/js/admin.js" defer></script>
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header"><img src="assets/icon_192.png" width="48" height="48" alt="STRAVA STRIKE"><div><h1>URUS SETIA</h1><p class="event-strip">STRAVA STRIKE KEVITU 2026</p></div></header>
+    <section id="admin-login-view" class="panel login-panel" aria-labelledby="login-title">
+      <p class="eyebrow">AKSES URUS SETIA</p><h2 id="login-title" tabindex="-1">Admin Login</h2><p class="muted">Log masuk untuk menyemak bukti aktiviti peserta.</p>
+      <form id="admin-login-form"><label for="admin-id">Admin ID</label><input id="admin-id" autocomplete="username" required maxlength="100"><label for="admin-pin">PIN</label><input id="admin-pin" type="password" inputmode="numeric" autocomplete="off" required maxlength="100"><p id="admin-login-error" class="error" role="alert" hidden></p><button id="admin-login-submit" class="primary" type="submit">MASUK</button></form>
+      <p class="hint">Sesi tamat selepas 2 jam tanpa aktiviti. Log masuk semula selepas memuat semula halaman.</p><a class="back-link" href="index.html">← Akses peserta</a>
+    </section>
+    <section id="admin-main-view" hidden aria-labelledby="pending-title">
+      <div class="session-bar"><p>Admin: <strong id="admin-identity"></strong></p><button id="admin-logout" class="secondary" type="button">LOG KELUAR</button></div>
+      <div class="pending-heading"><div><h2 id="pending-title" tabindex="-1">AKTIVITI MENUNGGU SEMAKAN</h2><p class="muted"><strong id="pending-count">0</strong> aktiviti menunggu semakan</p></div><button id="pending-refresh" class="secondary" type="button">MUAT SEMULA</button></div>
+      <p id="admin-notice" class="notice" role="status" hidden></p><p id="admin-main-error" class="error" role="alert" hidden></p><p id="pending-loading" class="muted" role="status" hidden>Memuatkan aktiviti...</p><p id="pending-empty" class="panel empty-state" hidden>Tiada aktiviti menunggu semakan.</p><div id="pending-list" class="pending-grid"></div>
+    </section>
+    <dialog id="moderation-dialog" aria-labelledby="confirmation-title"><h2 id="confirmation-title">Sahkan aktiviti ini?</h2><p id="confirmation-detail" class="muted"></p><div class="actions"><button id="confirmation-apply" class="primary" type="button">SAHKAN</button><button id="confirmation-cancel" class="secondary" type="button" autofocus>KEMBALI</button></div></dialog>
+    <footer>STRAVA STRIKE KEVITU 2026 · URUS SETIA</footer>
+  </main>
+</body>
+</html>

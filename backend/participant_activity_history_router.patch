@@ -1,0 +1,10 @@
+--- existing doPost(e) switch
++++ updated doPost(e) switch
+@@
+       case 'participant_login':
+         result = participantLogin_(payload);
+         break;
++
++      case 'participant_activity_history':
++        result = getParticipantActivityHistory_(payload);
++        break;

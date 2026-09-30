@@ -1,0 +1,10 @@
+--- existing doPost(e) switch
++++ updated doPost(e) switch
+@@
+       case 'participant_directory':
+         result = getParticipantDirectory_();
+         break;
++
++      case 'dashboard_summary':
++        result = getDashboardSummary_();
++        break;

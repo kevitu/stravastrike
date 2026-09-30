@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#142447">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Strava Strike">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="assets/icon_192.png">
+  <link rel="apple-touch-icon" href="assets/icon_192.png">
+  <style>body.app-booting{margin:0;background:#f8fafc}.app-booting>.shell{visibility:hidden}.app-booting #app-splash{position:fixed;inset:0;display:grid;place-items:center;background:#f8fafc;z-index:100}.app-booting .splash-content{text-align:center;padding:24px}.app-booting .splash-logo{width:150px;height:150px;object-fit:contain}.app-booting .splash-title{color:#142447;font:900 22px system-ui}.app-booting .splash-season,.app-booting .splash-motto,.app-booting #splash-status{font:12px system-ui;color:#142447}</style>
+  <title>Dashboard | STRAVA STRIKE KEVITU 2026</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <script src="assets/js/app.js" defer></script>
+</head>
+<body class="app-booting">
+  <section id="app-splash" class="app-splash" aria-label="Memulakan STRAVA STRIKE KEVITU" aria-busy="true"><div class="splash-content"><img class="splash-logo" src="assets/icon_512.png" width="150" height="150" alt="Logo STRAVA STRIKE KEVITU 2026"><p class="splash-title">STRAVA STRIKE <span>KEVITU</span></p><p class="splash-season">CABARAN SUKAN • 2026</p><div class="splash-stripes" aria-hidden="true"><i></i><i></i><i></i></div><p class="splash-motto">GERAK BERSAMA. CAPAI LEBIH.</p><span class="brand-spinner" aria-hidden="true"></span><p id="splash-status" role="status" aria-live="polite">Memuatkan...</p></div></section>
+  <div id="app-loading" class="app-loading" hidden><div class="loading-card" role="status" aria-live="polite"><span class="brand-spinner" aria-hidden="true"></span><p id="loading-context">Memuatkan...</p></div></div>
+  <noscript><style>#app-splash{display:none!important}.app-booting>.shell{visibility:visible}</style><p>Aktifkan JavaScript untuk menggunakan aplikasi ini.</p></noscript>
+  <main class="shell" id="app-shell" aria-busy="true">
+    <header id="login-brand" class="brand"><span class="brand-mark" aria-hidden="true">S<span>↗</span></span><div>STRAVA STRIKE <strong>KEVITU</strong><span class="season">CABARAN SUKAN · 2026</span></div></header>
+    <div id="login-layout" class="layout">
+      <section class="intro" aria-labelledby="intro-title"><p class="eyebrow">GERAK BERSAMA. CAPAI LEBIH.</p><h1 id="intro-title">Setiap langkah,<br><span>satu semangat.</span></h1><p class="intro-copy">Ruang peserta STRAVA STRIKE KEVITU.<br>Bersedia untuk bergerak bersama rumah sukan anda.</p><div class="login-hero-logo"><img src="assets/img/kevitu-logo.png" alt="Logo KEVITU" width="1280" height="1280"></div><span class="edition">STRAVA STRIKE / KEVITU 2026</span></section>
+      <section class="card" aria-label="Akses peserta">
+        <div id="login-view">
+          <p class="eyebrow">PARTICIPANT ACCESS</p><h2>Jom masuk.</h2><p class="muted">Pilih nama anda dan masukkan PIN peserta.</p>
+          <form id="login-form">
+            <label for="participant">Pilih Nama</label><select id="participant" name="kod_peserta" required disabled aria-describedby="directory-status"><option value="">Memuatkan peserta...</option></select>
+            <p id="directory-status" class="status" role="status">Memuatkan peserta...</p><button id="retry-directory" class="text-button" type="button" hidden>Cuba semula</button>
+            <label for="pin">PIN 4 digit</label><input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="off" placeholder="••••" required aria-describedby="pin-help login-error"><p id="pin-help" class="hint">Gunakan PIN peserta yang telah diberikan.</p>
+            <p id="login-error" class="error" role="alert" hidden></p>
+            <button id="login-button" class="primary" type="submit" disabled>MASUK <span aria-hidden="true">→</span></button>
+          </form>
+          <p class="privacy">Sesi tamat selepas 12 jam tanpa aktiviti.</p>
+          <p class="privacy"><a href="admin.html">URUS SETIA</a></p>
+        </div>
+      </section>
+    </div>
+    <section id="home-view" class="dashboard" hidden aria-labelledby="dashboard-title">
+            <aside class="sidebar" aria-label="Navigasi utama">
+        <button type="button" class="sidebar-logo" data-view="dashboard" aria-label="Strava Strike KEVITU Dashboard"><img class="approved-icon" src="assets/icon_192.png" alt="" width="40" height="40"><strong>STRAVA<br>STRIKE</strong></button>
+        <nav class="dashboard-nav" aria-label="Paparan peserta">
+          <button type="button" data-view="dashboard" aria-controls="view-dashboard" class="nav-active" aria-current="page"><span aria-hidden="true">▦</span>Dashboard</button>
+          <button type="button" data-view="kedudukan" aria-controls="view-kedudukan"><span aria-hidden="true">≡</span>Kedudukan</button>
+          <button type="button" data-view="aktiviti" aria-controls="view-aktiviti"><span aria-hidden="true">↗</span>Aktiviti</button>
+          <button type="button" data-view="peserta" aria-controls="view-peserta"><span aria-hidden="true">♙</span>Peserta</button>
+        </nav>
+        <p class="sidebar-edition">KEVITU<br><strong>2026</strong><span>GERAK BERSAMA</span></p>
+      </aside>
+      <div class="dashboard-main">
+      <div class="mobile-app-bar"><img class="approved-icon" src="assets/icon_192.png" alt="" width="32" height="32"><strong>STRAVA <span>STRIKE</span></strong><span>KEVITU / 2026</span></div>
+      <div class="dashboard-heading">
+        <div><h1 id="dashboard-title" tabindex="-1">DASHBOARD</h1><p class="title-strip">STRAVA STRIKE KEVITU 2026</p><p id="view-subtitle" class="muted">Paparan keputusan semasa</p></div><div class="dashboard-brand" aria-label="KEVITU Strava Strike"><strong>KEVITU<span>2026</span></strong><span>STRAVA <b>STRIKE</b><i>GERAK BERSAMA. CAPAI LEBIH.</i></span></div>
+        </div><div class="participant-toolbar"><div class="identity"><p id="participant-name"></p><p>Rumah Sukan: <strong id="participant-house"></strong></p><button id="logout-button" type="button" class="secondary">LOG KELUAR</button></div>
+      </div>
+      <div id="dashboard-feedback" hidden><p id="dashboard-status" class="section-note" role="status"></p><p id="dashboard-error" class="error" role="alert" hidden></p><button id="dashboard-retry" class="text-button" type="button" hidden>CUBA SEMULA</button></div>
+      <div id="dashboard-actions" class="dashboard-actions"><span class="scoreboard-label"><span aria-hidden="true">●</span> PAPAN SKOR KOMUNITI</span><button id="activity-button" type="button" class="primary">+ HANTAR AKTIVITI</button></div>
+      
+      <div id="view-dashboard" class="app-view"><div id="stats-grid" class="stats-grid" aria-label="Statistik semasa"></div>
+      <div class="dashboard-grid">
+        <section class="score-card dashboard-leaderboard" aria-labelledby="dashboard-ranking-title"><div class="section-heading"><h2 id="dashboard-ranking-title">Kedudukan Semasa</h2><button id="leaderboard-view-all" class="view-all" type="button">LIHAT SEMUA →</button></div><p class="section-note">5 peserta teratas · aktiviti SAH</p><div class="table-scroll"><table><caption class="sr-only">Lima peserta teratas berdasarkan kedudukan semasa</caption><thead><tr><th scope="col">#</th><th scope="col">Nama</th><th scope="col">Jarak (KM)</th><th scope="col">Aktiviti</th><th scope="col">Rumah Sukan</th></tr></thead><tbody id="dashboard-leaderboard-body"></tbody></table></div></section>
+        
+        <section class="score-card podium-card"><div class="section-heading"><h2>Top 3 Keseluruhan</h2></div><p class="section-note">Langkah hebat, semangat juara.</p><ol id="podium" class="podium"></ol></section>
+        <section id="community-section" class="score-card community"><div class="section-heading"><h2>Sasaran Komuniti</h2></div><p class="section-note">Setiap kilometer membawa kita lebih dekat.</p><p id="community-total" class="community-total"></p><progress id="community-progress" max="2000" value="0" aria-label="Kemajuan sasaran komuniti"></progress><p id="community-percentage" class="hint"></p></section>
+        <div id="dashboard-activity-slot"><section id="latest-section" class="score-card latest"><div class="section-heading"><h2>Aktiviti Terkini</h2></div><ul id="latest-activity" class="activity-list"></ul></section></div>
+      </div>
+      <section class="score-card house-ranking"><div class="section-heading"><h2>Ranking Rumah Sukan</h2></div><ol id="house-ranking" class="house-grid"></ol></section></div>
+<div id="view-kedudukan" class="app-view" hidden><section id="leaderboard-section" class="score-card leaderboard"><div class="section-heading"><h2>Kedudukan Semasa</h2></div><p class="section-note">Jarak terkumpul keseluruhan</p><div class="table-scroll" tabindex="0" role="region" aria-label="Jadual kedudukan peserta, tatal mendatar jika perlu"><table><caption class="sr-only">Kedudukan peserta berdasarkan aktiviti SAH</caption><thead><tr><th scope="col">#</th><th scope="col">Nama</th><th scope="col">Jarak (KM)</th><th scope="col">Aktiviti</th><th scope="col">Rumah Sukan</th></tr></thead><tbody id="leaderboard-body"></tbody></table></div></section></div>
+      <div id="view-aktiviti" class="app-view" hidden>
+        <section id="submission-panel" class="score-card" hidden aria-labelledby="submission-title">
+          <div class="section-heading"><h2 id="submission-title" tabindex="-1">Hantar Aktiviti</h2></div>
+          <p id="submission-identity" class="view-intro"></p>
+          <form id="activity-form" novalidate>
+            <fieldset id="activity-fields">
+              <div class="activity-form-grid"><div><label for="activity-date">Tarikh Aktiviti</label><input id="activity-date" type="date" required></div><div><label for="activity-distance">Jarak (KM)</label><input id="activity-distance" type="number" inputmode="decimal" min="0" step="any" placeholder="6.28" required><p class="hint">Masukkan jarak lebih daripada 0 KM. Nilai perpuluhan dibenarkan.</p></div></div>
+              <label for="activity-screenshot">Screenshot Peta Larian</label><input id="activity-screenshot" type="file" accept="image/jpeg,image/png,image/webp" required aria-describedby="screenshot-info"><p id="screenshot-info" class="hint" role="status">JPEG, PNG atau WebP. Imej dikecilkan tanpa dipotong sebelum dihantar.</p><img id="screenshot-preview" class="screenshot-preview" alt="Pratonton screenshot peta larian yang dipilih" hidden>
+              <label for="submission-pin">Sahkan dengan PIN 4 digit</label><input id="submission-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required placeholder="••••"><p class="hint">PIN digunakan untuk penghantaran ini sahaja.</p>
+              <p id="submission-error" class="error" role="alert" hidden></p>
+              <div class="form-actions"><button id="submission-submit" class="primary" type="submit">HANTAR AKTIVITI</button><button id="submission-cancel" class="secondary" type="button">BATAL</button></div>
+            </fieldset>
+          </form>
+        </section>
+        <section id="submission-success" class="score-card submission-success" role="status" hidden><h2>Aktiviti berjaya dihantar.</h2><p>Menunggu semakan urusetia.</p><dl id="submission-receipt"></dl><button id="submission-done" class="secondary" type="button">LIHAT DASHBOARD</button></section>
+        <section class="score-card activity-history" aria-labelledby="history-summary-title">
+          <div class="section-heading"><h2 id="history-summary-title">Ringkasan Aktiviti Anda</h2><button id="history-refresh" class="view-all" type="button">MUAT SEMULA</button></div>
+          <form id="history-pin-form" class="history-pin-form" hidden><label for="history-pin">Masukkan PIN untuk melihat rekod aktiviti anda.</label><div class="history-pin-controls"><input id="history-pin" type="password" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" autocomplete="off" required placeholder="••••"><button id="history-unlock" class="primary" type="submit">LIHAT REKOD</button></div><p class="hint">PIN disimpan dalam memori halaman sahaja. Log masuk semula selepas muat semula halaman.</p></form>
+          <p id="history-loading" class="section-note" role="status" hidden>Memuatkan rekod aktiviti...</p><p id="history-error" class="error" role="alert" hidden></p><div id="history-summary" class="history-summary"></div>
+          <div class="section-heading history-list-heading"><h2>Rekod Aktiviti Anda</h2></div><p id="history-empty" class="section-note" hidden>Belum ada aktiviti dihantar.</p><p id="history-locked" class="section-note">Sahkan PIN untuk melihat rekod peribadi anda.</p><ul id="history-list" class="history-list"></ul>
+        </section>
+      </div>
+      <section id="view-peserta" class="app-view score-card" hidden aria-labelledby="participants-title"><div class="section-heading"><h2 id="participants-title">Peserta Aktif</h2><span class="directory-tag">DIREKTORI PESERTA</span></div><p id="participants-status" class="section-note" role="status">Memuatkan peserta...</p><button id="retry-participants" type="button" class="text-button" hidden>Cuba semula</button><div id="participants-summary" class="participants-summary" aria-label="Bilangan peserta mengikut rumah sukan"></div><div id="participants-groups" class="participants-groups"></div></section>
+      </div>
+      <svg class="sports-tracks" viewBox="0 0 500 210" aria-hidden="true" focusable="false">
+        <g fill="none" stroke-width="5">
+          <path d="M-40 192C90 192 95 30 240 30S380 118 540 8" stroke="#db286c"/>
+          <path d="M-40 207C100 207 105 45 250 45S390 133 550 23" stroke="#2372d9"/>
+          <path d="M-40 222C110 222 115 60 260 60S400 148 560 38" stroke="#ef8534"/>
+        </g>
+      </svg>
+    </section>
+    <footer>STRAVA STRIKE KEVITU 2026 <span>Semangat kesukanan, dalam setiap langkah.</span></footer>
+  </main>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
