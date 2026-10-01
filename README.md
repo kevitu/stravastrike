@@ -1,14 +1,37 @@
 # STRAVA STRIKE KEVITU 2026
 
-Dashboard sukan dan PWA ringan untuk pendaftaran peserta, penghantaran aktiviti dengan screenshot peta larian, semakan urusetia dan keputusan individu/rumah sukan. Frontend menggunakan HTML, CSS dan Vanilla JavaScript tanpa framework berat.
+**STRAVA STRIKE KEVITU** ialah platform pengurusan event dan papan skor komuniti untuk merekod, menyemak, mengesahkan dan memaparkan prestasi peserta dalam program kecergasan KEVITU. Sistem ini **bukan pengganti Strava** dan bukan aplikasi GPS; Strava atau aplikasi kecergasan lain kekal sebagai sumber rakaman/bukti aktiviti, manakala STRAVA STRIKE KEVITU menjadi **Official Event Management & Community Scoreboard** untuk urusan program dalaman.
 
-**Status MVP:** ujian sebenar end-to-end telah lulus, berdasarkan pengesahan pemilik projek pada 30 September 2026. Backend Apps Script yang deployed ialah **Version 6**, termasuk sejarah aktiviti peribadi. Semakan release frontend dan pemasangan PWA pada telefon masih perlu diselesaikan.
+Frontend menggunakan HTML, CSS dan Vanilla JavaScript tanpa framework berat.
+
+**Status semasa:** frontend production tersedia melalui GitHub Pages, backend Apps Script deployed sebagai **Version 8** pada 1 Oktober 2026. Aliran login, submission, moderation, dashboard, sejarah peribadi dan perlindungan retry/duplicate telah diuji secara sebenar. Fungsi pembatalan sendiri oleh peserta untuk rekod PENDING telah dilaksanakan dan UI production telah dipaparkan; end-to-end cancel masih perlu direkodkan sebagai ujian release khusus.
+
+## Skop rasmi sistem
+
+Peranan utama sistem:
+- mengurus identiti peserta dan Rumah Sukan;
+- menerima penghantaran aktiviti dan bukti screenshot;
+- membolehkan urusetia menyemak status PENDING → SAH / BATAL;
+- mengira keputusan rasmi berdasarkan aktiviti SAH sahaja;
+- memaparkan leaderboard individu, Top 3, ranking Rumah Sukan dan sasaran komuniti;
+- menyimpan sejarah aktiviti peserta serta rekod audit program;
+- memberi saluran pembatalan sendiri untuk submission PENDING yang tersalah dihantar.
+
+Peranan Strava / aplikasi kecergasan:
+- merekod aktiviti sebenar peserta;
+- menyediakan screenshot/bukti yang dihantar ke STRAVA STRIKE KEVITU;
+- tidak menjadi sumber keputusan rasmi secara automatik pada implementasi semasa.
+
+Keputusan rasmi event kekal ditentukan oleh data yang disahkan dalam STRAVA STRIKE KEVITU.
+
+> **GERAK BERSAMA. CAPAI LEBIH.**
 
 ## Sistem dan fail utama
 
 ```text
 Google Form → DaftarStravaStrike2026 → PesertaStravaStrike2026
 Participant PWA → Apps Script API → AktivitiStravaStrike2026 + bukti Google Drive
+Peserta → PENDING → batal sendiri jika tersalah hantar
 Urusetia → semakan PENDING → SAH / BATAL → keputusan live
 ```
 
@@ -17,99 +40,128 @@ Urusetia → semakan PENDING → SAH / BATAL → keputusan live
 | Participant frontend | `index.html`, `assets/css/app.css`, `assets/js/app.js` |
 | Admin berasingan | `admin.html`, `assets/css/admin.css`, `assets/js/admin.js` |
 | PWA | `manifest.webmanifest`, `service_worker.js` |
-| Ikon diluluskan | `assets/icon_192.png`, `assets/icon_512.png` |
-| Logo KEVITU pada login | `assets/img/kevitu-logo.png` |
-| Patch Apps Script tempatan | `backend/dashboard_summary.gs`, `backend/participant_activity_history.gs` dan router patches masing-masing |
+| Ikon | `assets/icon_192.png`, `assets/icon_512.png` |
+| Logo KEVITU | `assets/img/kevitu-logo.png` |
+| Backend reference/patch tempatan | `backend/dashboard_summary.gs`, `backend/participant_activity_history.gs` dan router patches |
 
-Patch tempatan ialah bahan integrasi; sumber penuh dan deployment Apps Script diurus berasingan daripada repository ini.
+Kod Apps Script penuh/deployed masih diurus di Google Apps Script dan tidak sepenuhnya dicerminkan dalam folder `backend/`.
 
 - [GitHub repository](https://github.com/kevitu/stravastrike)
-- [Sasaran GitHub Pages](https://kevitu.github.io/stravastrike/)
+- [GitHub Pages](https://kevitu.github.io/stravastrike/)
 - [Apps Script Web App API](https://script.google.com/macros/s/AKfycbylWG4JXS3Yg-5fyujcEpQ7vd_qWt8tO8FY_vGpiEZ3UXGbxmR07Vsl_qJH2iMGnMfvWQ/exec)
 
 ## Pendaftaran dan akses peserta
 
 Pendaftaran melalui Google Form diselaraskan ke master `PesertaStravaStrike2026`. Setiap peserta mempunyai kod unik seperti `KEV019`, PIN 4 digit, status aktif/tidak aktif dan rumah sukan: **MERAH, BIRU, HIJAU, KUNING**. Kod dan PIN peserta lama dikekalkan semasa sync; peserta baharu diberi status `AKTIF`.
 
-Login menggunakan **dropdown nama + PIN 4 digit**. Nama tidak ditaip secara manual; pilihan nama dipadankan dengan `KOD_PESERTA`. Backend mengesahkan identiti dan status peserta.
+Login menggunakan **dropdown nama + PIN 4 digit**. Nama dipadankan dengan `KOD_PESERTA`; backend mengesahkan identiti dan status peserta.
 
-Sesi peserta tamat selepas **12 jam tanpa aktiviti**. `localStorage` menyimpan hanya `kod_peserta`, `nama`, `rumah_sukan` dan `last_active`. PIN tidak disimpan dalam `localStorage` atau `sessionStorage`; PIN untuk sejarah boleh berada dalam memori halaman dan perlu dimasukkan semula selepas refresh/session restore. Logout membersihkan sesi dan PIN dalam memori.
+Sesi peserta tamat selepas **12 jam tanpa aktiviti**. `localStorage` menyimpan metadata sesi sahaja: `kod_peserta`, `nama`, `rumah_sukan` dan `last_active`. PIN tidak dipersistkan dalam `localStorage` atau `sessionStorage`.
 
-## Paparan participant yang telah dilaksanakan
+## Paparan participant
 
-- **Dashboard:** KPI live, lima kedudukan teratas, podium Top 3, lima aktiviti terkini, ranking rumah sukan dan kemajuan sasaran komuniti.
+- **Dashboard:** KPI live, lima kedudukan teratas, podium Top 3, lima aktiviti terkini, ranking Rumah Sukan dan kemajuan sasaran komuniti.
 - **Kedudukan:** leaderboard penuh menggunakan data live.
-- **Aktiviti:** penghantaran sebenar, receipt dan sejarah aktiviti peserta sendiri.
-- **Peserta:** direktori aktif mengikut rumah sukan, nama A–Z dan bilangan peserta. Rumah yang tiada diletakkan dalam `BELUM DITETAPKAN`.
-
-Navigasi menukar paparan tanpa page reload. Reka bentuk mobile-first menggunakan navy, magenta, biru, oren dan asas putih; tiada data demo atau rekod palsu pada dashboard.
+- **Aktiviti:** penghantaran sebenar, receipt, sejarah sendiri, pautan bukti dan pembatalan PENDING.
+- **Peserta:** direktori aktif mengikut rumah sukan, nama A–Z dan bilangan peserta.
 
 ### Peraturan dashboard
 
-Action `dashboard_summary` menggunakan peserta aktif dan hanya aktiviti **`STATUS = SAH`**. `PENDING` dan `BATAL` tidak menyumbang kepada jumlah aktiviti, total KM, hari aktif, leaderboard, Top 3, aktiviti terkini, jumlah rumah sukan atau kemajuan komuniti.
+Action `dashboard_summary` menggunakan peserta aktif dan hanya aktiviti **`STATUS = SAH`**. `PENDING` dan `BATAL` tidak menyumbang kepada jumlah aktiviti, total KM, hari aktif, leaderboard, Top 3, aktiviti terkini, jumlah Rumah Sukan atau kemajuan komuniti.
 
-- Jumlah Peserta: bilangan peserta aktif.
-- Jumlah Aktiviti / Jumlah KM: bilangan dan jumlah jarak aktiviti SAH peserta aktif.
-- Hari Aktif: bilangan tarikh aktiviti unik dalam rekod SAH.
-- Ranking: jumlah KM menurun; seri dipecahkan melalui nama A–Z. Peserta 0 KM boleh disenaraikan selepas peserta yang mempunyai KM; podium hanya menunjukkan peserta dengan aktiviti yang disahkan.
-- Sasaran komuniti semasa: **2,000 KM**. Bar kemajuan visual dihadkan kepada 100%.
+Tarikh user-facing dipaparkan sebagai **DD/MM/YYYY**; nilai dalaman/API boleh kekal ISO `YYYY-MM-DD`.
 
-Data dimuat semula selepas login/restore, apabila membuka Dashboard/Kedudukan dan selepas penghantaran berjaya, dengan penggabungan permintaan navigasi pantas. Ralat API dipaparkan secara inline tanpa fallback kepada data palsu.
+## Penghantaran aktiviti
 
-## Penghantaran dan sejarah aktiviti
+Peserta memberikan **tarikh aktiviti, jarak KM, screenshot wajib dan PIN pengesahan**. Jarak mesti nombor sah **lebih daripada 0**, perpuluhan dibenarkan dan tiada business-rule maksimum jarak.
 
-Peserta memberikan **tarikh aktiviti, jarak KM, screenshot wajib dan PIN pengesahan baharu**. Identiti datang daripada sesi. Jarak mesti nombor sah **lebih daripada 0**; perpuluhan dibenarkan dan **tiada maksimum jarak berdasarkan peraturan perniagaan**.
+Screenshot JPEG/PNG/WebP dikecilkan tanpa crop kepada sisi terpanjang maksimum 1280px dan dimampatkan sebelum base64 dihantar. Frontend menghadkan sumber kepada 15 MB dan sasaran upload selepas pemampatan sekitar 500 KB. Backend menghadkan decoded screenshot kepada 5 MB, memuat naik bukti ke Google Drive dan merekodkan aktiviti baharu sebagai **PENDING**.
 
-Screenshot JPEG/PNG/WebP dikecilkan tanpa crop kepada sisi terpanjang maksimum 1280px dan dimampatkan sebagai JPEG sebelum base64 dihantar. Had imej frontend ialah 15 MB untuk sumber dan 500 KB selepas pemampatan. Backend memuat naik bukti ke Google Drive dan merekodkan aktiviti sebagai **PENDING**. Perlindungan frontend menghalang penghantaran serentak/double click; ini bukan jaminan deduplikasi backend.
+### Idempotent retry / perlindungan duplicate
 
-Receipt memaparkan ID aktiviti, jarak, tarikh dan mesej menunggu semakan, diikuti tindakan **LIHAT DASHBOARD**. PIN, screenshot dan base64 tidak dipersistkan dalam browser storage; screenshot/PIN penghantaran dibersihkan selepas kejayaan.
+Mulai backend **Apps Script Version 7**, setiap penghantaran baharu membawa `submission_id` unik yang disimpan dalam kolum `SUBMISSION_ID` pada `AktivitiStravaStrike2026`.
 
-Action `participant_activity_history` memerlukan `kod_peserta` + PIN dan mengesahkan peserta wujud, PIN betul serta status `AKTIF` sebelum mengembalikan rekod peserta itu sahaja. Peserta tidak boleh mengambil rekod orang lain melalui endpoint ini.
+Flow:
+1. frontend menjana satu `submission_id` untuk satu cubaan logikal;
+2. retry selepas sambungan gagal menggunakan `submission_id` yang sama;
+3. backend menyemak `submission_id` di bawah `ScriptLock` sebelum jana ACT ID atau upload screenshot;
+4. jika ID sama untuk peserta sama sudah wujud, backend memulangkan rekod asal;
+5. tiada ACT baharu dan tiada screenshot kedua untuk retry yang sama.
 
-Sejarah memaparkan **SAH, PENDING dan BATAL**, tarikh Malaysia, jarak, ID dan pautan **LIHAT BUKTI**. Ringkasan peribadi mengandungi Aktiviti SAH, Jumlah KM SAH dan Menunggu Semakan; BATAL tidak dikira sebagai KM. Sejarah dimuat semula selepas penghantaran dan boleh dimuat semula untuk melihat perubahan status. Bukti dibuka atas tindakan pengguna, bukan dimuat turun automatik.
+Ujian sebenar pada 1 Oktober 2026 mengesahkan `ACT000013` dipulangkan semula apabila request dengan `submission_id` sama dihantar semula, dan **tiada `ACT000014` dicipta**.
+
+## Sejarah dan pembatalan aktiviti peserta
+
+Action `participant_activity_history` memerlukan `kod_peserta` + PIN, mengesahkan peserta wujud, PIN betul dan status `AKTIF`, kemudian hanya mengembalikan rekod milik peserta tersebut.
+
+Sejarah memaparkan **SAH, PENDING dan BATAL**, tarikh, jarak, ID aktiviti dan pautan **LIHAT BUKTI**.
+
+Mulai backend **Version 8**, peserta boleh membatalkan rekod sendiri melalui action `participant_cancel_activity` dengan syarat:
+- aktiviti milik peserta tersebut;
+- PIN 4 digit sah;
+- peserta `AKTIF`;
+- status semasa ialah **PENDING**.
+
+Pembatalan menukar `PENDING → BATAL`; screenshot asal **tidak dipadam** untuk audit. Rekod `SAH` atau `BATAL` tidak boleh dibatalkan sendiri. Selepas batal, peserta boleh hantar semula bukti betul sebagai submission baharu.
 
 ## Urus setia
 
-Link sekunder **URUS SETIA** pada login membuka `admin.html`. Admin menggunakan Admin ID + PIN, sesi **2 jam tanpa aktiviti**, senarai PENDING, screenshot expandable dan tindakan **SAHKAN / BATALKAN** dengan confirmation.
+Admin menggunakan `admin.html`, Admin ID + PIN, sesi **2 jam tanpa aktiviti**, senarai PENDING dan tindakan **SAHKAN / BATALKAN**. Credentials admin disimpan dalam Apps Script Script Properties dan tidak di-hardcode pada frontend.
 
-Selepas kejayaan, kad diproses dibuang serta-merta dan bilangan pending dikemas kini tanpa reload. Tindakan serentak dihalang. Tarikh dipaparkan mengikut Malaysia, contohnya `30/09/2026`.
+## API tersedia — Apps Script Version 8
 
-Credentials admin dikonfigurasi dalam **Apps Script Script Properties**; nilai rahsia tidak didokumentasikan atau di-hardcode dalam frontend. PIN admin berada dalam memori halaman sahaja. Browser hanya menyimpan metadata selamat `admin_id`/`last_active` dalam `sessionStorage`; selepas refresh, admin perlu login semula sebelum tindakan privileged. Backend kekal autoriti bagi setiap tindakan.
-
-## API yang tersedia — Apps Script Version 6
-
-| Action | Kegunaan / akses |
+| Action | Kegunaan |
 | --- | --- |
 | `participant_directory` | Direktori peserta aktif |
 | `participant_login` | Pengesahan kod peserta + PIN |
-| `submit_activity` | Penghantaran dengan kod peserta + PIN; status baharu PENDING |
-| `dashboard_summary` | Ringkasan awam SAH sahaja; tiada PIN/credentials dalam response |
-| `participant_activity_history` | Rekod peribadi selepas pengesahan kod peserta + PIN |
-| `admin_login` | Pengesahan Admin ID + PIN |
-| `admin_pending` | Senarai PENDING dengan credentials admin |
-| `admin_update_status` | Tukar kepada SAH/BATAL dengan credentials admin |
+| `submit_activity` | Submission + idempotent retry melalui `submission_id` |
+| `dashboard_summary` | Ringkasan awam SAH sahaja |
+| `participant_activity_history` | Sejarah peribadi |
+| `participant_cancel_activity` | Batal sendiri jika masih PENDING |
+| `admin_login` | Login admin |
+| `admin_pending` | Senarai PENDING |
+| `admin_update_status` | Urusetia tukar PENDING → SAH/BATAL |
 
-## PWA dan pengalaman launch
+## PWA dan deployment
 
-`manifest.webmanifest` menetapkan nama **STRAVA STRIKE KEVITU 2026**, short name **Strava Strike**, `display: standalone`, `start_url: ./`, `scope: ./`, tema navy dan latar off-white. Ikon tempatan 192×192/512×512 menggunakan `purpose: any`; artwork diluluskan tidak diubah untuk maskable cropping.
+GitHub Pages menggunakan branch `main` dengan folder **/(root)**. Production URL:
+https://kevitu.github.io/stravastrike/
 
-```text
-PWA/native launch → branded splash → loading → login atau sesi dipulihkan → Aktiviti
-Penghantaran berjaya → success receipt → LIHAT DASHBOARD
-```
+Deployment penting:
+- `f1f7f95` — update login header PWA icon/cache;
+- `5a0a10a` — duplicate activity submission protection;
+- `968eabd` — participant self-cancel UI untuk PENDING.
 
-Splash dalam aplikasi dipaparkan sekurang-kurangnya sekitar 1.2 saat, dengan loading mengikut konteks dan sokongan reduced motion. Logo KEVITU turut digunakan pada kawasan hero login.
+`service_worker.js` cache static app-shell sahaja. API POST, PIN, screenshot/base64, sejarah peribadi dan moderation admin tidak dicache.
 
-`service_worker.js` menggunakan cache versi dengan allowlist **static app-shell sahaja**: halaman participant, CSS/JS, ikon dan manifest. Strategi network-first memberikan fallback shell daripada cache; live data masih memerlukan rangkaian. Tidak semua aset visual tambahan dimasukkan dalam cache shell.
+## Status verifikasi
 
-Service worker **tidak cache** hasil Apps Script POST API, PIN, screenshot upload/base64, response sejarah atau data moderation admin. Admin pages dan API dinamik bukan offline cached.
+Telah disahkan:
+- login/directory;
+- submission + screenshot ke Drive;
+- PENDING dan moderation PENDING → SAH;
+- dashboard live;
+- personal history;
+- logout/session;
+- `SUBMISSION_ID` pada submission baharu;
+- retry ID sama pulangkan ACT asal tanpa duplicate;
+- Pages production deployed;
+- butang **BATALKAN** dipaparkan untuk PENDING.
 
-Struktur PWA telah disediakan, tetapi pemasangan sebenar/Add to Home Screen, standalone dan native splash pada telefon memerlukan verifikasi akhir melalui **HTTPS seperti GitHub Pages**. `file://` tidak mencukupi; localhost sesuai untuk semakan teknikal awal.
+Masih perlu E2E khusus:
+- tekan BATALKAN → confirm → PIN → `PENDING → BATAL`;
+- history refresh dan butang BATALKAN hilang;
+- rekod BATAL kekal tidak dikira dalam scoreboard.
 
-## Verifikasi MVP dan langkah seterusnya
+## Future / TODO
 
-Pemilik projek mengesahkan ujian sebenar lulus untuk login/direktori peserta, penghantaran, screenshot Google Drive, PENDING, login admin, moderation **PENDING → SAH**, refresh dashboard live, sejarah peribadi, logout dan sesi.
+- annual programme/year management;
+- archive previous year dan preserve history;
+- reset leaderboard tahunan;
+- annual target configuration;
+- year-based participant/house configuration;
+- eksport admin CSV;
+- laporan PDF jika diperlukan;
+- kemaskan visual butang **BATALKAN** (fungsi sudah ada, presentation desktop masih terlalu lebar).
 
-**Snapshot semasa verifikasi MVP:** 20 peserta aktif, 2 aktiviti SAH, 6.81 KM. Ini ialah angka keadaan ujian, bukan nilai kekal atau konfigurasi sistem.
-
-Rujuk [Project Status](docs/PROJECT_STATUS.md) untuk checklist release dan kerja masa hadapan. Pengurusan tahun/programme, archiving, konfigurasi sasaran tahunan dan eksport admin CSV/PDF belum dilaksanakan.
+Integrasi terus dengan Strava API **bukan sebahagian implementasi semasa** dan perlu dinilai berasingan dari sudut teknikal, privasi dan syarat penggunaan.
