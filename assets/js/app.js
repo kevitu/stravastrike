@@ -575,6 +575,7 @@ let previewUrl = null;
 let compressionVersion = 0;
 let compressionPending = false;
 let submissionPending = false;
+let submissionId = '';
 
 function localToday() {
   const date = new Date();
@@ -592,6 +593,7 @@ function clearScreenshot() {
   el('screenshot-preview').hidden = true;
 }
 function resetSubmission() {
+  submissionId = '';
   compressionVersion++;
   compressionPending = false;
   clearScreenshot();
@@ -705,17 +707,61 @@ el('activity-form').addEventListener('submit', async (event) => {
   el('submission-submit').disabled = true;
   el('submission-submit').textContent = 'Sedang menghantar...';
   el('activity-form').setAttribute('aria-busy', 'true');
+ 
   let payload = null;
-  try {
-    payload = { action: 'submit_activity', kod_peserta: owner.kod_peserta, pin: el('submission-pin').value, tarikh_aktiviti: date, jarak_km: km, screenshot_base64: '', screenshot_mime: compressedScreenshot.type };
-    el('submission-pin').value = '';
-    payload.screenshot_base64 = await blobBase64(compressedScreenshot);
-    if (session !== owner || Date.now() - owner.last_active >= IDLE_TIMEOUT) return;
-    const result = await request(payload);
-    if (session !== owner) return;
-    const data = result.data ?? result;
-    if (result.ok === false || result.success === false) { submissionError(apiSubmissionError(result)); return; }
-    if ((data.status ?? result.status) !== 'PENDING') { submissionError('Status penghantaran tidak dapat disahkan. Jangan hantar semula sebelum menyemak dengan urusetia.'); return; }
+ 
+try {
+  if (!submissionId) {
+    submissionId =
+      window.crypto?.randomUUID?.() ||
+      `SUB_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  }
+
+  payload = {
+    action: 'submit_activity',
+    kod_peserta: owner.kod_peserta,
+    pin: el('submission-pin').value,
+    tarikh_aktiviti: date,
+    jarak_km: km,
+    screenshot_base64: '',
+    screenshot_mime: compressedScreenshot.type,
+    submission_id: submissionId
+  };
+
+  el('submission-pin').value = '';
+
+  payload.screenshot_base64 =
+    await blobBase64(compressedScreenshot);
+
+  if (
+    session !== owner ||
+    Date.now() - owner.last_active >= IDLE_TIMEOUT
+  ) {
+    return;
+  }
+
+  const result = await request(payload);
+
+  if (session !== owner) return;
+
+const data = result.data ?? result;
+
+if (result.ok === false || result.success === false) {
+  submissionError(apiSubmissionError(result));
+  return;
+}
+
+const submissionStatus =
+  String(data.status ?? result.status ?? '')
+    .trim()
+    .toUpperCase();
+
+if (!['PENDING', 'SAH', 'BATAL'].includes(submissionStatus)) {
+  submissionError(
+    'Status penghantaran tidak dapat disahkan. Jangan hantar semula sebelum menyemak dengan urusetia.'
+  );
+  return;
+}
     const id = data.id_aktiviti ?? data.ID_AKTIVITI ?? result.id_aktiviti ?? result.ID_AKTIVITI;
     setHistoryPin(payload.pin);
     el('submission-receipt').replaceChildren(node('dt', '', 'ID Aktiviti'), node('dd', '', id || 'Tidak dikembalikan oleh API'), node('dt', '', 'Jarak'), node('dd', '', `${data.jarak_km ?? km} KM`), node('dt', '', 'Tarikh'), node('dd', '', data.tarikh_aktiviti ?? date));
