@@ -475,22 +475,144 @@ function renderHistory() {
     card.append(node('p', '', label), node('strong', '', value));
     return card;
   }));
-  el('history-list').replaceChildren(...(historyData?.activities ?? []).map((activity) => {
+  el('history-list').replaceChildren(
+  ...(historyData?.activities ?? []).map(activity => {
     const item = node('li', 'history-row');
     const detail = node('div');
-    detail.append(node('p', '', displayDate(activity.tarikh_aktiviti)), node('p', 'history-id', activity.id_aktiviti));
-    item.append(detail, node('p', 'history-distance', `${activity.jarak_km.toFixed(2)} KM`), node('span', `history-status history-${activity.status.toLowerCase()}`, activity.status));
+
+    detail.append(
+      node('p', '', displayDate(activity.tarikh_aktiviti)),
+      node('small', '', activity.id_aktiviti)
+    );
+
+    item.append(
+      detail,
+      node(
+        'p',
+        'history-distance',
+        `${activity.jarak_km.toFixed(2)} KM`
+      )
+    );
+
     try {
       const url = new URL(activity.screenshot_url);
-      if (url.protocol === 'https:' && !url.username && !url.password) {
-        const link = node('a', 'history-evidence', 'LIHAT BUKTI ↗');
-        link.href = url.href; link.target = '_blank'; link.rel = 'noopener noreferrer';
+
+      if (
+        url.protocol === 'https:' &&
+        !url.username &&
+        !url.password
+      ) {
+        const link = node(
+          'a',
+          'history-evidence',
+          'LIHAT BUKTI ↗'
+        );
+
+        link.href = url.href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+
         item.append(link);
       }
-    } catch { /* Missing or unsafe URLs are not rendered. */ }
+    } catch {
+      // Missing or unsafe URLs are not rendered.
+    }
+
+    if (activity.status === 'PENDING') {
+      const cancelButton = node(
+        'button',
+        'history-cancel',
+        'BATALKAN'
+      );
+
+      cancelButton.type = 'button';
+
+      cancelButton.addEventListener('click', () => {
+        cancelParticipantActivity(activity);
+      });
+
+      item.append(cancelButton);
+    }
+
     return item;
-  }));
+  })
+);
 }
+async function cancelParticipantActivity(activity) {
+  if (!session || !activity?.id_aktiviti) return;
+
+  const confirmed = window.confirm(
+    `Batalkan penghantaran ${activity.id_aktiviti}?\n\n` +
+    'Aktiviti yang dibatalkan tidak akan dikira dan anda boleh hantar semula bukti yang betul.'
+  );
+
+  if (!confirmed) return;
+
+  const pin = window.prompt(
+    'Masukkan PIN 4 digit anda untuk mengesahkan pembatalan:'
+  );
+
+  if (pin === null) return;
+
+  const cleanPin = String(pin).trim();
+
+  if (!/^[0-9]{4}$/.test(cleanPin)) {
+    window.alert('PIN mesti 4 digit.');
+    return;
+  }
+
+  const owner = session;
+
+  let payload = {
+    action: 'participant_cancel_activity',
+    kod_peserta: owner.kod_peserta,
+    pin: cleanPin,
+    id_aktiviti: activity.id_aktiviti
+  };
+
+  try {
+    const result = await request(payload);
+
+    if (!session || session !== owner) return;
+
+    if (result.ok === false || result.success === false) {
+      window.alert(
+        result.error ||
+        result.message ||
+        'Aktiviti tidak dapat dibatalkan.'
+      );
+      return;
+    }
+
+    const data = result.data ?? result;
+
+    if (
+      String(data.status || '')
+        .trim()
+        .toUpperCase() !== 'BATAL'
+    ) {
+      window.alert(
+        'Status pembatalan tidak dapat disahkan. Sila muat semula rekod.'
+      );
+      return;
+    }
+
+    window.alert(
+      `${activity.id_aktiviti} telah dibatalkan.`
+    );
+
+    await loadActivityHistory(true);
+
+  } catch {
+    window.alert(
+      'Sambungan terputus atau API tidak dapat dihubungi. Sila semak rekod sebelum mencuba semula.'
+    );
+  } finally {
+    payload.pin = '';
+    payload = null;
+  }
+}
+
 function validateHistory(data) {
   const summary = data?.summary;
   const count = (value) => Number.isInteger(value) && value >= 0;
