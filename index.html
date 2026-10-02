@@ -11,7 +11,59 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" href="assets/icon_192.png">
   <link rel="apple-touch-icon" href="assets/icon_192.png">
-  <style>body.app-booting{margin:0;background:#f8fafc}.app-booting>.shell{visibility:hidden}.app-booting #app-splash{position:fixed;inset:0;display:grid;place-items:center;background:#f8fafc;z-index:100}.app-booting .splash-content{text-align:center;padding:24px}.app-booting .splash-logo{width:150px;height:150px;object-fit:contain}.app-booting .splash-title{color:#142447;font:900 22px system-ui}.app-booting .splash-season,.app-booting .splash-motto,.app-booting #splash-status{font:12px system-ui;color:#142447}</style>
+  <style>
+  body.app-booting {
+    margin: 0;
+    background: #f8fafc;
+  }
+
+  .app-booting > .shell {
+    visibility: hidden;
+  }
+
+  .app-booting #app-splash {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding:
+      env(safe-area-inset-top)
+      env(safe-area-inset-right)
+      env(safe-area-inset-bottom)
+      env(safe-area-inset-left);
+    box-sizing: border-box;
+    background: #f8fafc;
+    z-index: 100;
+    overflow: hidden;
+  }
+
+  .app-booting .splash-content {
+    text-align: center;
+    padding: 24px;
+  }
+
+  .app-booting .splash-logo {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+  }
+
+  .app-booting .splash-title {
+    color: #142447;
+    font: 900 22px system-ui;
+  }
+
+  .app-booting .splash-season,
+  .app-booting .splash-motto,
+  .app-booting #splash-status {
+    font: 12px system-ui;
+    color: #142447;
+  }
+</style>
   <title>Dashboard | STRAVA STRIKE KEVITU 2026</title>
   <link rel="stylesheet" href="assets/css/app.css">
   <script src="assets/js/app.js" defer></script>
@@ -57,7 +109,21 @@
         </div><div class="participant-toolbar"><div class="identity"><p id="participant-name"></p><p>Rumah Sukan: <strong id="participant-house"></strong></p><button id="logout-button" type="button" class="secondary">LOG KELUAR</button></div>
       </div>
       <div id="dashboard-feedback" hidden><p id="dashboard-status" class="section-note" role="status"></p><p id="dashboard-error" class="error" role="alert" hidden></p><button id="dashboard-retry" class="text-button" type="button" hidden>CUBA SEMULA</button></div>
-      <div id="dashboard-actions" class="dashboard-actions"><span class="scoreboard-label"><span aria-hidden="true">●</span> PAPAN SKOR KOMUNITI</span><button id="activity-button" type="button" class="primary">+ HANTAR AKTIVITI</button></div>
+      <div id="dashboard-actions" class="dashboard-actions">
+  <span class="scoreboard-label">
+    <span aria-hidden="true">●</span> PAPAN SKOR KOMUNITI
+  </span>
+
+  <div class="dashboard-action-buttons">
+    <button id="dashboard-refresh" type="button" class="dashboard-refresh">
+      ↻ REFRESH
+    </button>
+
+    <button id="activity-button" type="button" class="primary">
+      + HANTAR AKTIVITI
+    </button>
+  </div>
+</div>
       
       <div id="view-dashboard" class="app-view"><div id="stats-grid" class="stats-grid" aria-label="Statistik semasa"></div>
       <div class="dashboard-grid">

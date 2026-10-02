@@ -735,6 +735,7 @@ el('history-refresh').addEventListener('click', () => loadActivityHistory(true))
 window.addEventListener('pagehide', () => clearHistory());
 renderHistory();
 el('dashboard-retry').addEventListener('click', () => loadDashboardSummary(true));
+el('dashboard-refresh').addEventListener('click', () => loadDashboardSummary(true));
 el('leaderboard-view-all').addEventListener('click', () => switchView('kedudukan'));
 renderDashboard();
 session = readSession();
@@ -966,5 +967,3 @@ if (!['PENDING', 'SAH', 'BATAL'].includes(submissionStatus)) {
 });
 el('submission-cancel').addEventListener('click', () => { if (!submissionPending) resetSubmission(); });
 el('submission-done').addEventListener('click', () => { switchView('dashboard'); });
-
-

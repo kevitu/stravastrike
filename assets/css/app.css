@@ -56,3 +56,70 @@ body:has(.dashboard:not([hidden])){background:#f1f3f8}.shell:has(.dashboard:not(
 #login-layout .login-hero-logo{margin:22px 0 18px;max-width:100%;width:190px}#login-layout .login-hero-logo img{display:block;width:100%;height:auto;object-fit:contain}
 @media(max-width:1024px){#login-layout .login-hero-logo{width:160px;margin-top:18px}}
 @media(max-width:760px){#login-layout .login-hero-logo{width:120px;margin:16px 0 0}}
+
+.dashboard-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-refresh {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid #ccd5e2;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--navy);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .05em;
+}
+
+.dashboard-refresh:hover {
+  background: #f5f7fb;
+  border-color: var(--blue);
+}
+
+.dashboard-refresh:disabled {
+  cursor: wait;
+  opacity: .6;
+}
+
+@media (max-width: 700px) {
+  .dashboard-action-buttons {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px;
+  }
+
+  .dashboard-refresh {
+    min-height: 48px;
+  }
+
+  .dashboard-action-buttons .primary {
+    width: 100%;
+  }
+}
+
+.app-splash {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding:
+    env(safe-area-inset-top)
+    env(safe-area-inset-right)
+    env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.splash-content {
+  margin: auto;
+}
