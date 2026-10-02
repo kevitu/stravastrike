@@ -231,22 +231,81 @@ async function loadDashboardSummary(force = false) {
   }
 }
 async function request(payload) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
   let loadingToken;
-  if (payload.action === 'participant_directory') loadingToken = beginLoading('Memuatkan peserta...');
-  if (payload.action === 'dashboard_summary' && !dashboardSummary && ['dashboard', 'kedudukan'].includes(activeView)) loadingToken = beginLoading('Memuatkan keputusan semasa...');
-  if (payload.action === 'participant_activity_history' && !historyData && activeView === 'aktiviti' && !submissionPending && el('submission-success').hidden) loadingToken = beginLoading('Memuatkan rekod aktiviti...');
+
+  if (payload.action === 'participant_directory') {
+    loadingToken = beginLoading('Memuatkan peserta...');
+  }
+
+  if (
+    payload.action === 'dashboard_summary' &&
+    !dashboardSummary &&
+    ['dashboard', 'kedudukan'].includes(activeView)
+  ) {
+    loadingToken = beginLoading('Memuatkan keputusan semasa...');
+  }
+
+  if (
+    payload.action === 'participant_activity_history' &&
+    !historyData &&
+    activeView === 'aktiviti' &&
+    !submissionPending &&
+    el('submission-success').hidden
+  ) {
+    loadingToken = beginLoading('Memuatkan rekod aktiviti...');
+  }
+
+  const maxAttempts =
+    payload.action === 'dashboard_summary' ? 2 : 1;
+
   try {
-    // A simple POST avoids the preflight unsupported by Apps Script web apps.
-    const response = await fetch(API_URL, {
-      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload), signal: controller.signal, redirect: 'follow',
-      credentials: 'omit', cache: 'no-store'
-    });
-    if (!response.ok) throw new Error('API unavailable');
-    return await response.json();
-  } finally { clearTimeout(timeout); if (loadingToken) endLoading(loadingToken); }
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      const controller = new AbortController();
+
+      const timeout = setTimeout(
+        () => controller.abort(),
+        30000
+      );
+
+      try {
+        // A simple POST avoids the preflight unsupported by Apps Script web apps.
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+          redirect: 'follow',
+          credentials: 'omit',
+          cache: 'no-store'
+        });
+
+        if (!response.ok) {
+          throw new Error('API unavailable');
+        }
+
+        return await response.json();
+
+      } catch (error) {
+        if (attempt >= maxAttempts) {
+          throw error;
+        }
+
+        await new Promise(resolve => {
+          setTimeout(resolve, 1000);
+        });
+
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+  } finally {
+    if (loadingToken) {
+      endLoading(loadingToken);
+    }
+  }
 }
 
 function readSession() {
