@@ -123,3 +123,26 @@ body:has(.dashboard:not([hidden])){background:#f1f3f8}.shell:has(.dashboard:not(
 .splash-content {
   margin: auto;
 }
+@media (max-width: 700px) {
+  .history-pin-controls {
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1fr);
+    gap: 10px;
+    align-items: stretch;
+  }
+
+  .history-pin-controls input {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    min-height: 56px;
+    text-align: center;
+    font-size: 20px;
+  }
+
+  .history-pin-controls button {
+    width: 100%;
+    min-height: 56px;
+    margin: 0;
+  }
+}
