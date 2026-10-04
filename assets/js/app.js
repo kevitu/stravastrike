@@ -292,6 +292,10 @@ const maxAttempts =
           throw error;
         }
 
+        if (payload.action === 'submit_activity') {
+          el('submission-submit').textContent = 'MENGESAHKAN PENGHANTARAN...';
+        }
+
         await new Promise(resolve => {
           setTimeout(resolve, 1000);
         });
