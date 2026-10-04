@@ -6,13 +6,13 @@ Frontend menggunakan HTML, CSS dan Vanilla JavaScript tanpa framework berat.
 
 **Status semasa (4 Oktober 2026):** frontend production tersedia melalui GitHub Pages, backend Apps Script kekal deployed sebagai **Version 8** pada 1 Oktober 2026. Penambahbaikan terbaru meliputi retry automatik dashboard/submission, butang REFRESH dashboard, splash mobile berpusat dan input PIN sejarah mobile yang lebih besar. Perubahan reliability/UI ini hanya pada frontend dan tidak memerlukan backend version baharu. Aliran login, submission, moderation, dashboard, sejarah peribadi dan perlindungan retry/duplicate telah diuji secara sebenar pada release terdahulu. Fungsi pembatalan sendiri oleh peserta untuk rekod PENDING telah dilaksanakan dan UI production telah dipaparkan; end-to-end cancel masih perlu direkodkan sebagai ujian release khusus.
 
-**Release Dashboard UI Refresh + Event Countdown:** implementasi dan verification siap dalam workspace pada 4 Oktober 2026; masih menunggu review, commit/push dan deployment frontend. Status IMPLEMENTED dalam dokumen ini merujuk release tersebut, bukan pengesahan bahawa UI baharu sudah deployed ke production. Backend production kekal **Apps Script Version 8**.
+**Release Dashboard UI Refresh + Event Countdown:** **production deployed and verified** di GitHub Pages pada **4 Oktober 2026**, melalui commit **`6e14457` — `feat: refresh dashboard event countdown`**. Production smoke test **PASS**, termasuk REFRESH memuatkan data semasa dan HANTAR AKTIVITI menerima success receipt. Backend production kekal **Apps Script Version 8**; tiada backend deployment diperlukan untuk release ini.
 
 ## Tempoh rasmi event
 
 **STRAVA STRIKE KEVITU 2026 berlangsung dari 1 Oktober 2026 hingga hujung 31 Oktober 2026, sebelum masuk 1 November 2026 (waktu Malaysia).**
 
-Official event window ialah `1 Oktober 2026 00:00:00 +08:00 ≤ waktu < 1 November 2026 00:00:00 +08:00`, zon waktu **Asia/Kuala_Lumpur (UTC+08:00)**. Countdown dan Event Day / Time Progress dalam release ini menggunakan tempoh tersebut; event statistics, heatmap Oktober serta Final Mode yang dirancang juga perlu berpandukan tempoh ini. **Final Mode dan submission cutoff belum dilaksanakan**; selepas countdown tamat, hanya presentation hero berubah dan submission tidak disekat.
+Official event window ialah `1 Oktober 2026 00:00:00 +08:00 ≤ waktu < 1 November 2026 00:00:00 +08:00`, zon waktu **Asia/Kuala_Lumpur (UTC+08:00)**. Countdown dan Event Day / Time Progress dalam release ini menggunakan tempoh tersebut; event statistics, heatmap Oktober serta Final Mode yang dirancang juga perlu berpandukan tempoh ini. **Final Mode dan submission cutoff masih PLANNED / belum dilaksanakan**; selepas countdown tamat, hanya presentation hero berubah dan submission tidak disekat.
 
 Pihak urusetia **tidak menetapkan sasaran KM komuniti rasmi**. Paparan **Sasaran Komuniti 2,000 KM telah dibuang daripada Dashboard** dalam release ini. Field/config lama `community_target_km` boleh kekal secara dalaman untuk compatibility API, tetapi bukan KPI rasmi program. Statistik komuniti merujuk pencapaian sebenar; event progress mengukur masa event sahaja, **bukan sasaran KM**.
 
@@ -171,8 +171,9 @@ Deployment penting:
 - `75c942e` — input PIN sejarah mobile diperbesarkan (3 Oktober 2026);
 - `0538067` — retry `submit_activity` pada transient failure menggunakan `submission_id` sama (4 Oktober 2026);
 - `761b798` — paparkan **MENGESAHKAN PENGHANTARAN...** semasa retry submission (4 Oktober 2026).
+- `6e14457` — `feat: refresh dashboard event countdown` (4 Oktober 2026); Dashboard UI Refresh + Event Countdown deployed ke production GitHub Pages, smoke test **PASS**.
 
-Lima commit terbaru ini ialah perubahan frontend sahaja dan tidak memerlukan deployment backend version baharu.
+Perubahan reliability/UI dan release Dashboard ini ialah frontend sahaja dan tidak memerlukan deployment backend version baharu.
 
 `service_worker.js` cache static app-shell sahaja. API POST, PIN, screenshot/base64, sejarah peribadi dan moderation admin tidak dicache.
 
@@ -180,7 +181,7 @@ Lima commit terbaru ini ialah perubahan frontend sahaja dan tidak memerlukan dep
 
 ### Verification release Dashboard UI Refresh + Event Countdown
 
-Verification implementasi dalam workspace pada 4 Oktober 2026:
+Automated/workspace verification sebelum deployment pada 4 Oktober 2026:
 
 - `node --check assets/js/app.js` — **PASS**.
 - `node --test tests/dashboard-refresh.test.cjs` — **10/10 PASS**, termasuk robustness fix generic countdown failure yang mengesahkan `event-progress.hidden === true`.
@@ -191,7 +192,16 @@ Verification implementasi dalam workspace pada 4 Oktober 2026:
 - Relative House Ranking diuji termasuk semua rumah 0 KM; official logo loading dan image failure fallback turut diuji tanpa kehilangan nama, KM atau bar.
 - Test guardrail mengesahkan `app.js` di luar `renderDashboard()` tidak berubah dalam release Dashboard ini; tiada backend/GAS berubah.
 
-Preview browser menggunakan data awam production untuk semakan visual. Ujian isolation menggunakan fixture sesi ujian; tiada login atau submission sebenar dihantar. Verification ini tidak menggantikan E2E submission/cancel di bawah atau mengesahkan deployment release baharu.
+Preview browser menggunakan data awam production untuk semakan visual. Ujian isolation menggunakan fixture sesi ujian; kenyataan tiada login atau submission sebenar dihantar merujuk **automated/workspace verification sebelum deployment sahaja**. Production smoke test selepas deployment telah mengesahkan submission sebenar berjaya sehingga menerima success receipt. Ujian transient retry dan cancel yang masih pending di bawah kekal berasingan.
+
+### Production smoke test — PASS (4 Oktober 2026)
+
+- **Production deployed and verified:** GitHub Pages menggunakan release commit **`6e14457` — `feat: refresh dashboard event countdown`**.
+- Dashboard baharu, countdown, Event Day / Time Progress, empat KPI, Kedudukan Teratas, Top 3 Individu serta House Ranking dengan logo/fallback berjaya dipaparkan.
+- **REFRESH** berjaya memuatkan data semasa.
+- **HANTAR AKTIVITI** production berjaya menghantar aktiviti sebenar sehingga menerima **success receipt**.
+- Backend kekal **Apps Script Version 8**; tiada backend/GAS deployment atau perubahan API contract diperlukan.
+- HIJAU/KUNING masih menggunakan fallback badge sehingga logo rasmi diterima. Final Mode dan submission cutoff kekal **PLANNED / belum dilaksanakan**.
 
 ### Verification terdahulu dan E2E pending
 
@@ -209,14 +219,14 @@ Telah disahkan pada release terdahulu:
 
 Masih perlu E2E khusus:
 - retry automatik dashboard/submission ketika kegagalan sementara, mesej pengesahan dan ketiadaan duplicate pada aliran retry terbaru;
-- REFRESH dashboard, splash berpusat dan input PIN sejarah pada peranti mobile;
+- splash berpusat dan input PIN sejarah pada peranti mobile;
 - tekan BATALKAN → confirm → PIN → `PENDING → BATAL`;
 - history refresh dan butang BATALKAN hilang;
 - rekod BATAL kekal tidak dikira dalam scoreboard.
 
 ## Roadmap dashboard
 
-Status IMPLEMENTED merujuk release Dashboard UI Refresh yang siap di workspace; feature PLANNED masih belum dilaksanakan.
+Status IMPLEMENTED merujuk release Dashboard UI Refresh yang **production deployed and verified** pada 4 Oktober 2026 (`6e14457`); feature PLANNED masih belum dilaksanakan.
 
 | Feature | Status |
 | --- | --- |
