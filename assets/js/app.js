@@ -181,9 +181,16 @@ function renderDashboard() {
     return item;
   }));
   if (!top.length) el('podium').append(node('li', 'summary-empty', data ? 'Belum ada kedudukan.' : 'Data kedudukan belum tersedia.'));
-  const colors = { MERAH: 'red', BIRU: 'blue', HIJAU: 'green', KUNING: 'yellow' };
-  const houseLogos = { MERAH: 'assets/img/rumah_merah.png', BIRU: 'assets/img/rumah_biru.jpeg' };
-  const highestHouseKm = Math.max(0, ...(data?.house_totals ?? []).map((house) => house.total_km));
+
+const colors = { MERAH: 'red', BIRU: 'blue', HIJAU: 'green', KUNING: 'yellow' };
+
+const houseLogos = {
+  MERAH: 'assets/img/rumah_merah.png',
+  BIRU: 'assets/img/rumah_biru.jpeg',
+  KUNING: 'assets/img/rumah_kuning.png'
+};
+
+const highestHouseKm = Math.max(0, ...(data?.house_totals ?? []).map((house) => house.total_km));
   el('house-ranking').replaceChildren(...(data?.house_totals ?? []).map((house, index) => {
     const item = node('li', `house-item ${colors[house.rumah_sukan] || ''}`);
     item.append(node('span', 'house-rank', `#${index + 1}`), node('strong', 'house-name', house.rumah_sukan), node('span', 'house-km', `${house.total_km.toFixed(2)} KM`), node('span', 'house-participant-count', `${house.participant_count} peserta`));

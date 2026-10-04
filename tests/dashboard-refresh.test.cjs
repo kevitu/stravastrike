@@ -140,7 +140,12 @@ test('house bars use the highest house KM and handle zero totals', () => {
 
 test('official house logos fall back without losing name, KM or relative bar', () => {
   const rows = housePreview([20, 10, 5, 0]);
-  const expectedSources = ['assets/img/rumah_merah.png', 'assets/img/rumah_biru.jpeg', undefined, undefined];
+  const expectedSources = [
+  'assets/img/rumah_merah.png',
+  'assets/img/rumah_biru.jpeg',
+  undefined,
+  'assets/img/rumah_kuning.png'
+];
   rows.forEach((row, index) => {
     const emblem = row.children.find(child => child.className === 'house-emblem');
     assert.ok(emblem);
