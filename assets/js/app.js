@@ -255,8 +255,8 @@ async function request(payload) {
     loadingToken = beginLoading('Memuatkan rekod aktiviti...');
   }
 
-  const maxAttempts =
-    payload.action === 'dashboard_summary' ? 2 : 1;
+const maxAttempts =
+    ['dashboard_summary', 'submit_activity'].includes(payload.action) ? 2 : 1;
 
   try {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
