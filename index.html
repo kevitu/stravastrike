@@ -106,7 +106,7 @@
       <div class="mobile-app-bar"><img class="approved-icon" src="assets/icon_192.png" alt="" width="32" height="32"><strong>STRAVA <span>STRIKE</span></strong><span>KEVITU / 2026</span></div>
       <div class="dashboard-heading">
         <div><h1 id="dashboard-title" tabindex="-1">DASHBOARD</h1><p class="title-strip">STRAVA STRIKE KEVITU 2026</p><p id="view-subtitle" class="muted">Paparan keputusan semasa</p></div><div class="dashboard-brand" aria-label="KEVITU Strava Strike"><strong>KEVITU<span>2026</span></strong><span>STRAVA <b>STRIKE</b><i>GERAK BERSAMA. CAPAI LEBIH.</i></span></div>
-        </div><div class="participant-toolbar"><div class="identity"><p id="participant-name"></p><p>Rumah Sukan: <strong id="participant-house"></strong></p><button id="logout-button" type="button" class="secondary">LOG KELUAR</button></div>
+        </div><div class="participant-toolbar"><div class="identity"><div class="identity-details"><p id="participant-name"></p><p class="identity-house">Rumah Sukan: <strong id="participant-house"></strong></p></div><button id="logout-button" type="button" class="secondary">LOG KELUAR</button></div>
       </div>
       <div id="dashboard-feedback" hidden><p id="dashboard-status" class="section-note" role="status"></p><p id="dashboard-error" class="error" role="alert" hidden></p><button id="dashboard-retry" class="text-button" type="button" hidden>CUBA SEMULA</button></div>
       <div id="dashboard-actions" class="dashboard-actions">
@@ -125,15 +125,39 @@
   </div>
 </div>
       
-      <div id="view-dashboard" class="app-view"><div id="stats-grid" class="stats-grid" aria-label="Statistik semasa"></div>
+      <div id="view-dashboard" class="app-view">
+      <section id="event-countdown" class="event-hero" aria-labelledby="event-title">
+        <div class="event-copy">
+          <p class="event-eyebrow">STRAVA STRIKE KEVITU 2026</p>
+          <h2 id="event-title">CABARAN OKTOBER</h2>
+          <p id="event-status" class="event-status" role="status" aria-live="polite">TEMPOH RASMI EVENT</p>
+          <p class="event-dates">1 OKTOBER — 31 OKTOBER 2026 <span>WAKTU MALAYSIA · UTC+08:00</span></p>
+          <p id="event-message" class="event-message">Gerak bersama. Capai lebih.</p>
+        </div>
+        <div class="event-clock">
+          <p class="countdown-label">BAKI MASA EVENT</p>
+          <div id="countdown-units" class="countdown-units" role="timer" aria-live="off" aria-label="Baki masa hingga 1 November 2026, 00:00 waktu Malaysia" hidden>
+            <div class="countdown-unit"><strong id="countdown-days">—</strong><span>HARI</span></div>
+            <div class="countdown-unit"><strong id="countdown-hours">—</strong><span>JAM</span></div>
+            <div class="countdown-unit"><strong id="countdown-minutes">—</strong><span>MINIT</span></div>
+            <div class="countdown-unit"><strong id="countdown-seconds">—</strong><span>SAAT</span></div>
+          </div>
+          <div id="event-progress" class="event-progress" hidden>
+            <p id="event-day" class="event-day">HARI — / 31</p>
+            <progress id="event-time-progress" max="100" value="0" aria-label="Progress masa event Oktober 2026"></progress>
+          </div>
+          <p class="event-clock-note">Tamat sebelum 1 November 2026, 00:00 MYT</p>
+        </div>
+      </section>
+      <div id="stats-grid" class="stats-grid" aria-label="Statistik semasa"></div>
       <div class="dashboard-grid">
-        <section class="score-card dashboard-leaderboard" aria-labelledby="dashboard-ranking-title"><div class="section-heading"><h2 id="dashboard-ranking-title">Kedudukan Semasa</h2><button id="leaderboard-view-all" class="view-all" type="button">LIHAT SEMUA →</button></div><p class="section-note">5 peserta teratas · aktiviti SAH</p><div class="table-scroll"><table><caption class="sr-only">Lima peserta teratas berdasarkan kedudukan semasa</caption><thead><tr><th scope="col">#</th><th scope="col">Nama</th><th scope="col">Jarak (KM)</th><th scope="col">Aktiviti</th><th scope="col">Rumah Sukan</th></tr></thead><tbody id="dashboard-leaderboard-body"></tbody></table></div></section>
+        <section class="score-card dashboard-leaderboard" aria-labelledby="dashboard-ranking-title"><div class="section-heading"><h2 id="dashboard-ranking-title">Kedudukan Teratas</h2><button id="leaderboard-view-all" class="view-all" type="button">LIHAT SEMUA →</button></div><p class="section-note">5 peserta teratas · aktiviti SAH</p><div class="table-scroll"><table><caption class="sr-only">Lima peserta teratas berdasarkan kedudukan semasa</caption><thead><tr><th scope="col">#</th><th scope="col">Nama</th><th scope="col">Jarak (KM)</th><th scope="col">Aktiviti</th><th scope="col">Rumah Sukan</th></tr></thead><tbody id="dashboard-leaderboard-body"></tbody></table></div></section>
         
-        <section class="score-card podium-card"><div class="section-heading"><h2>Top 3 Keseluruhan</h2></div><p class="section-note">Langkah hebat, semangat juara.</p><ol id="podium" class="podium"></ol></section>
-        <section id="community-section" class="score-card community"><div class="section-heading"><h2>Sasaran Komuniti</h2></div><p class="section-note">Setiap kilometer membawa kita lebih dekat.</p><p id="community-total" class="community-total"></p><progress id="community-progress" max="2000" value="0" aria-label="Kemajuan sasaran komuniti"></progress><p id="community-percentage" class="hint"></p></section>
-        <div id="dashboard-activity-slot"><section id="latest-section" class="score-card latest"><div class="section-heading"><h2>Aktiviti Terkini</h2></div><ul id="latest-activity" class="activity-list"></ul></section></div>
+        <section class="score-card podium-card"><div class="section-heading"><h2>Top 3 Individu</h2></div><p class="section-note">Langkah hebat, semangat juara.</p><ol id="podium" class="podium"></ol></section>
+        <section class="score-card house-ranking"><div class="section-heading"><h2>Ranking Rumah Sukan</h2></div><p class="section-note">KM SAH · bar relatif kepada rumah tertinggi</p><ol id="house-ranking" class="house-grid"></ol></section>
+        <div id="dashboard-activity-slot"><section id="latest-section" class="score-card latest"><div class="section-heading"><h2>Aktiviti Terkini</h2></div><p class="section-note">Lima aktiviti SAH terkini</p><div class="latest-columns" aria-hidden="true"><span>PESERTA</span><span>TARIKH AKTIVITI</span><span>RUMAH SUKAN</span><span>JARAK</span></div><ul id="latest-activity" class="activity-list"></ul></section></div>
       </div>
-      <section class="score-card house-ranking"><div class="section-heading"><h2>Ranking Rumah Sukan</h2></div><ol id="house-ranking" class="house-grid"></ol></section></div>
+      </div>
 <div id="view-kedudukan" class="app-view" hidden><section id="leaderboard-section" class="score-card leaderboard"><div class="section-heading"><h2>Kedudukan Semasa</h2></div><p class="section-note">Jarak terkumpul keseluruhan</p><div class="table-scroll" tabindex="0" role="region" aria-label="Jadual kedudukan peserta, tatal mendatar jika perlu"><table><caption class="sr-only">Kedudukan peserta berdasarkan aktiviti SAH</caption><thead><tr><th scope="col">#</th><th scope="col">Nama</th><th scope="col">Jarak (KM)</th><th scope="col">Aktiviti</th><th scope="col">Rumah Sukan</th></tr></thead><tbody id="leaderboard-body"></tbody></table></div></section></div>
       <div id="view-aktiviti" class="app-view" hidden>
         <section id="submission-panel" class="score-card" hidden aria-labelledby="submission-title">
@@ -169,12 +193,101 @@
     </section>
     <footer>STRAVA STRIKE KEVITU 2026 <span>Semangat kesukanan, dalam setiap langkah.</span></footer>
   </main>
+  <!-- Optional, isolated enhancement: no API, app globals, or submission dependencies. -->
+  <script id="event-countdown-script">
+  (() => {
+    'use strict';
+    let interval;
+    let hero;
+    let status;
+    let units;
+    function stop() {
+      clearInterval(interval);
+    }
+    function failSafely() {
+      stop();
+      try {
+        if (units) units.hidden = true;
+        const progress = document.getElementById('event-progress');
+        if (progress) progress.hidden = true;
+        if (status) status.textContent = 'TEMPOH RASMI EVENT';
+        if (hero) hero.dataset.state = 'unavailable';
+      } catch { /* A broken widget must never affect the participant app. */ }
+    }
+    try {
+      hero = document.getElementById('event-countdown');
+      status = document.getElementById('event-status');
+      units = document.getElementById('countdown-units');
+      const message = document.getElementById('event-message');
+      const fields = ['days', 'hours', 'minutes', 'seconds'].map(unit => document.getElementById(`countdown-${unit}`));
+      if (!hero || !status || !units || !message || fields.some(field => !field)) return;
+      const start = Date.parse('2026-10-01T00:00:00+08:00');
+      const end = Date.parse('2026-11-01T00:00:00+08:00');
+      function updateEventProgress(now) {
+        try {
+          const container = document.getElementById('event-progress');
+          const label = document.getElementById('event-day');
+          const progress = document.getElementById('event-time-progress');
+          if (!container || !label || !progress) return;
+          const elapsed = Math.max(0, Math.min(end - start, now - start));
+          const day = now < start ? 0 : Math.min(31, Math.floor(elapsed / 86400000) + 1);
+          label.textContent = `HARI ${day} / 31`;
+          progress.value = elapsed / (end - start) * 100;
+          container.hidden = false;
+        } catch {
+          try {
+            const container = document.getElementById('event-progress');
+            if (container) container.hidden = true;
+          } catch { /* Event progress must never interrupt the countdown or participant app. */ }
+        }
+      }
+      function update() {
+        try {
+          const now = Date.now();
+          if (!Number.isFinite(now)) throw new Error('Invalid device time');
+          updateEventProgress(now);
+          const state = now < start ? 'before' : now < end ? 'active' : 'ended';
+          const stateChanged = hero.dataset.state !== state;
+          hero.dataset.state = state;
+          units.hidden = state !== 'active';
+          if (state === 'before') {
+            if (stateChanged) {
+              status.textContent = 'EVENT BELUM BERMULA';
+              message.textContent = 'Cabaran bermula pada 1 Oktober 2026, 00:00 waktu Malaysia.';
+            }
+          } else if (state === 'ended') {
+            if (stateChanged) {
+              status.textContent = 'STRAVA STRIKE KEVITU 2026 TAMAT';
+              message.textContent = 'Terima kasih kerana bergerak bersama sepanjang Oktober.';
+            }
+            stop();
+            return false;
+          } else {
+            if (stateChanged) {
+              status.textContent = 'SEDANG BERLANGSUNG';
+              message.textContent = 'Masih ada masa untuk terus bergerak. Jom kekal aktif!';
+            }
+            const remaining = Math.ceil((end - now) / 1000);
+            const values = [Math.floor(remaining / 86400), Math.floor(remaining / 3600) % 24, Math.floor(remaining / 60) % 60, remaining % 60];
+            fields.forEach((field, index) => { field.textContent = String(values[index]).padStart(2, '0'); });
+          }
+          return true;
+        } catch {
+          failSafely();
+          return false;
+        }
+      }
+      if (update()) interval = setInterval(update, 1000);
+      window.addEventListener('pagehide', stop);
+      window.addEventListener('pageshow', () => {
+        stop();
+        if (update()) interval = setInterval(update, 1000);
+      });
+    } catch { failSafely(); }
+  })();
+  </script>
 </body>
 </html>
-
-
-
-
 
 
 

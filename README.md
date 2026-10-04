@@ -6,13 +6,15 @@ Frontend menggunakan HTML, CSS dan Vanilla JavaScript tanpa framework berat.
 
 **Status semasa (4 Oktober 2026):** frontend production tersedia melalui GitHub Pages, backend Apps Script kekal deployed sebagai **Version 8** pada 1 Oktober 2026. Penambahbaikan terbaru meliputi retry automatik dashboard/submission, butang REFRESH dashboard, splash mobile berpusat dan input PIN sejarah mobile yang lebih besar. Perubahan reliability/UI ini hanya pada frontend dan tidak memerlukan backend version baharu. Aliran login, submission, moderation, dashboard, sejarah peribadi dan perlindungan retry/duplicate telah diuji secara sebenar pada release terdahulu. Fungsi pembatalan sendiri oleh peserta untuk rekod PENDING telah dilaksanakan dan UI production telah dipaparkan; end-to-end cancel masih perlu direkodkan sebagai ujian release khusus.
 
+**Release Dashboard UI Refresh + Event Countdown:** implementasi dan verification siap dalam workspace pada 4 Oktober 2026; masih menunggu review, commit/push dan deployment frontend. Status IMPLEMENTED dalam dokumen ini merujuk release tersebut, bukan pengesahan bahawa UI baharu sudah deployed ke production. Backend production kekal **Apps Script Version 8**.
+
 ## Tempoh rasmi event
 
 **STRAVA STRIKE KEVITU 2026 berlangsung dari 1 Oktober 2026 hingga hujung 31 Oktober 2026, sebelum masuk 1 November 2026 (waktu Malaysia).**
 
-Official event window ialah `1 Oktober 2026 00:00:00 ≤ waktu < 1 November 2026 00:00:00`, zon waktu **Asia/Kuala_Lumpur (UTC+08:00)**. Tempoh ini menjadi rujukan dokumentasi dan perancangan countdown, event statistics, heatmap Oktober serta Final Mode selepas event tamat. Ia tidak bermaksud sekatan tarikh atau Final Mode sudah dilaksanakan dalam production.
+Official event window ialah `1 Oktober 2026 00:00:00 +08:00 ≤ waktu < 1 November 2026 00:00:00 +08:00`, zon waktu **Asia/Kuala_Lumpur (UTC+08:00)**. Countdown dan Event Day / Time Progress dalam release ini menggunakan tempoh tersebut; event statistics, heatmap Oktober serta Final Mode yang dirancang juga perlu berpandukan tempoh ini. **Final Mode dan submission cutoff belum dilaksanakan**; selepas countdown tamat, hanya presentation hero berubah dan submission tidak disekat.
 
-Pihak urusetia **tidak menetapkan sasaran KM komuniti rasmi**. `2,000 KM` atau mana-mana community target dalam paparan/config sedia ada bukan KPI rasmi program; statistik komuniti merujuk pencapaian sebenar, bukan kemajuan terhadap sasaran urusetia.
+Pihak urusetia **tidak menetapkan sasaran KM komuniti rasmi**. Paparan **Sasaran Komuniti 2,000 KM telah dibuang daripada Dashboard** dalam release ini. Field/config lama `community_target_km` boleh kekal secara dalaman untuk compatibility API, tetapi bukan KPI rasmi program. Statistik komuniti merujuk pencapaian sebenar; event progress mengukur masa event sahaja, **bukan sasaran KM**.
 
 ## Skop rasmi sistem
 
@@ -68,7 +70,7 @@ Sesi peserta tamat selepas **12 jam tanpa aktiviti**. `localStorage` menyimpan m
 
 ## Paparan participant
 
-- **Dashboard:** statistik live, lima kedudukan teratas, podium Top 3, lima aktiviti terkini dan ranking Rumah Sukan; butang **REFRESH** memuat semula ringkasan terkini. Paparan community target sedia ada bukan sasaran rasmi atau KPI yang ditetapkan urusetia.
+- **Dashboard:** hero Event Countdown, statistik live, lima kedudukan teratas, podium Top 3 Individu, lima aktiviti terkini dan Ranking Rumah Sukan dalam gaya official sports event / premium dashboard; butang **REFRESH** memuat semula ringkasan terkini.
 - **Kedudukan:** leaderboard penuh menggunakan data live.
 - **Aktiviti:** penghantaran sebenar, receipt, sejarah sendiri, pautan bukti dan pembatalan PENDING.
 - **Peserta:** direktori aktif mengikut rumah sukan, nama A–Z dan bilangan peserta.
@@ -80,6 +82,25 @@ Action `dashboard_summary` menggunakan peserta aktif dan hanya aktiviti **`STATU
 Tarikh user-facing dipaparkan sebagai **DD/MM/YYYY**; nilai dalaman/API boleh kekal ISO `YYYY-MM-DD`.
 
 Jika request `dashboard_summary` mengalami kegagalan sementara, frontend mencuba semula sekali selepas 1 saat (maksimum dua cubaan, timeout 30 saat bagi setiap cubaan). Splash mobile dipusatkan dalam viewport dengan mengambil kira safe area peranti.
+
+### Dashboard UI Refresh + Event Countdown — IMPLEMENTED
+
+- **Countdown:** frontend-only, dikira setiap saat tanpa API/network request dan tanpa dependency kepada `dashboard_summary`. State ialah **EVENT BELUM BERMULA**, **SEDANG BERLANGSUNG** dan **STRAVA STRIKE KEVITU 2026 TAMAT**; semasa event, baki hari/jam/minit/saat dipaparkan.
+- **Event Day / Time Progress:** **HARI X / 31** dan bar nipis berdasarkan elapsed event time; sebelum event hari 0 / progress 0%, semasa event hari 1–31 mengikut waktu Malaysia, selepas event hari 31 / progress 100%.
+- **Empat KPI:** **Peserta Aktif**, **Jumlah KM SAH**, **Jumlah Aktiviti SAH** dan **Hari Aktif**, daripada medan API sedia ada `participant_count`, `total_km`, `activity_count` dan `active_days`.
+- **Kedudukan Teratas / Top 3 Individu:** kedudukan kekal berdasarkan data SAH sebenar; podium dikemas kini secara visual.
+- **Ranking Rumah Sukan:** bar ialah perbandingan relatif kepada rumah dengan KM tertinggi (100% visual); rumah lain relatif kepadanya. Jika semua rumah 0 KM, semua bar 0%. Ini bukan progress kepada sasaran rasmi.
+- **Logo rumah:** MERAH menggunakan `assets/img/rumah_merah.png`; BIRU menggunakan `assets/img/rumah_biru.jpeg` dalam frame seragam yang kemas untuk latar putih JPEG. HIJAU/KUNING menggunakan fallback badge warna sehingga asset rasmi tersedia. Image/logo failure memaparkan badge fallback tanpa menghilangkan nama rumah, KM, ranking atau bar relatif.
+- **Aktiviti Terkini:** hanya nama peserta, tarikh aktiviti, Rumah Sukan dan jarak daripada field production sedia ada; tiada jenis aktiviti, avatar, masa aktiviti atau data mockup direka.
+- **Participant identity:** nama peserta, Rumah Sukan dan LOG KELUAR dipolish secara compact menggunakan session sedia ada; session/logout logic tidak berubah.
+
+### Reliability / guardrail release
+
+Dashboard enhancement ini ialah **read-only / progressive enhancement**. Countdown, logo, event progress atau widget Dashboard **tidak boleh menjadi dependency kepada login atau `submit_activity`**; kegagalannya tidak boleh menghalang peserta login atau menghantar bukti.
+
+Generic countdown `failSafely()` turut hide countdown units dan event progress jika wujud supaya stale event information tidak ditinggalkan. Event-progress failure diasingkan daripada countdown; kegagalan enhancement ini tidak menjejaskan participant app.
+
+Backend/GAS/API contract tidak berubah dan backend production kekal **Apps Script Version 8**. Release ini tidak mengubah participant login, screenshot compression, `submit_activity`, `submission_id`, automatic submission retry, personal history, cancel PENDING atau admin/moderation.
 
 ## Penghantaran aktiviti
 
@@ -157,7 +178,24 @@ Lima commit terbaru ini ialah perubahan frontend sahaja dan tidak memerlukan dep
 
 ## Status verifikasi
 
-Telah disahkan:
+### Verification release Dashboard UI Refresh + Event Countdown
+
+Verification implementasi dalam workspace pada 4 Oktober 2026:
+
+- `node --check assets/js/app.js` — **PASS**.
+- `node --test tests/dashboard-refresh.test.cjs` — **10/10 PASS**, termasuk robustness fix generic countdown failure yang mengesahkan `event-progress.hidden === true`.
+- `git diff --check` — **PASS**, exit 0; amaran LF → CRLF sahaja.
+- Desktop/tablet/mobile dan lebar 320px diuji tanpa horizontal overflow; **REFRESH** dan **HANTAR AKTIVITI** kekal tersedia.
+- Countdown boundaries diuji sebelum mula, tepat mula, sebelum tamat dan tepat tamat; update timer serta API/network independence diuji.
+- Countdown/event-progress failure isolation diuji; login tersedia dan HANTAR AKTIVITI masih membuka borang aktif ketika enhancement gagal.
+- Relative House Ranking diuji termasuk semua rumah 0 KM; official logo loading dan image failure fallback turut diuji tanpa kehilangan nama, KM atau bar.
+- Test guardrail mengesahkan `app.js` di luar `renderDashboard()` tidak berubah dalam release Dashboard ini; tiada backend/GAS berubah.
+
+Preview browser menggunakan data awam production untuk semakan visual. Ujian isolation menggunakan fixture sesi ujian; tiada login atau submission sebenar dihantar. Verification ini tidak menggantikan E2E submission/cancel di bawah atau mengesahkan deployment release baharu.
+
+### Verification terdahulu dan E2E pending
+
+Telah disahkan pada release terdahulu:
 - login/directory;
 - submission + screenshot ke Drive;
 - PENDING dan moderation PENDING → SAH;
@@ -176,22 +214,26 @@ Masih perlu E2E khusus:
 - history refresh dan butang BATALKAN hilang;
 - rekod BATAL kekal tidak dikira dalam scoreboard.
 
-## Roadmap dashboard — PLANNED / belum dilaksanakan
+## Roadmap dashboard
 
-Semua feature berikut telah dipersetujui untuk perancangan dan **belum dilaksanakan**:
+Status IMPLEMENTED merujuk release Dashboard UI Refresh yang siap di workspace; feature PLANNED masih belum dilaksanakan.
 
 | Feature | Status |
 | --- | --- |
-| Event Countdown | PLANNED / belum dilaksanakan |
+| Dashboard UI Refresh | IMPLEMENTED dalam release ini |
+| Event Countdown | IMPLEMENTED dalam release ini |
+| Event Day / Time Progress | IMPLEMENTED dalam release ini |
+| House Ranking relative comparison | IMPLEMENTED dalam release ini |
+| House logo support/fallback | IMPLEMENTED dalam release ini |
+| House Battle enhancement (asas) | IMPLEMENTED; logo rasmi HIJAU/KUNING menunggu asset |
 | Today at STRAVA STRIKE | PLANNED / belum dilaksanakan |
 | Personal Progress Card | PLANNED / belum dilaksanakan |
 | Streak & Active Days | PLANNED / belum dilaksanakan |
-| House Battle enhancement | PLANNED / belum dilaksanakan |
-| Milestone / Achievement badges | PLANNED / belum dilaksanakan |
+| Milestone / Achievement badges ala Strava | PLANNED / belum dilaksanakan |
 | October Activity Heatmap | PLANNED / belum dilaksanakan |
 | Final Mode selepas event tamat | PLANNED / belum dilaksanakan |
 
-Countdown dan event statistics mesti menggunakan official event window di atas; October Activity Heatmap merujuk Oktober 2026 dan Final Mode dirancang bermula selepas event tamat pada 1 November 2026 00:00 waktu Malaysia. Progress, milestone dan statistik tidak boleh menganggap community target sebagai KPI rasmi urusetia.
+Enhancement asas House Battle meliputi bar relatif dan logo/fallback; asset rasmi HIJAU/KUNING masih menunggu. Event statistics dan October Activity Heatmap yang dirancang perlu menggunakan official event window. Final Mode selepas 1 November 2026 00:00 waktu Malaysia kekal PLANNED; hero tamat tidak melaksanakan Final Mode atau submission cutoff. Progress, milestone dan statistik tidak boleh menganggap community target sebagai KPI rasmi urusetia.
 
 **Prinsip keselamatan pembangunan:** semua feature dashboard baharu ialah **read-only / progressive enhancement** dan **tidak boleh menjadi dependency kepada login atau `submit_activity`**. Kegagalan widget/statistik dashboard tidak boleh menghalang peserta login atau menghantar bukti; aliran penghantaran mesti terus tersedia secara bebas daripada widget tambahan.
 

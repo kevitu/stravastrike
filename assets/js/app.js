@@ -150,9 +150,9 @@ function validateSummary(data) {
 function renderDashboard() {
   const data = dashboardSummary;
   const stats = [
-    ['Jumlah Peserta', data?.participant_count ?? '—', 'navy'],
-    ['Jumlah Aktiviti', data?.activity_count ?? '—', 'pink'],
-    ['Jumlah KM', data ? data.total_km.toFixed(2) : '—', 'blue'],
+    ['Peserta Aktif', data?.participant_count ?? '—', 'navy'],
+    ['Jumlah KM SAH', data ? data.total_km.toFixed(2) : '—', 'blue'],
+    ['Jumlah Aktiviti SAH', data?.activity_count ?? '—', 'pink'],
     ['Hari Aktif', data?.active_days ?? '—', 'orange']
   ];
   el('stats-grid').replaceChildren(...stats.map(([label, value, color]) => {
@@ -182,24 +182,42 @@ function renderDashboard() {
   }));
   if (!top.length) el('podium').append(node('li', 'summary-empty', data ? 'Belum ada kedudukan.' : 'Data kedudukan belum tersedia.'));
   const colors = { MERAH: 'red', BIRU: 'blue', HIJAU: 'green', KUNING: 'yellow' };
+  const houseLogos = { MERAH: 'assets/img/rumah_merah.png', BIRU: 'assets/img/rumah_biru.jpeg' };
+  const highestHouseKm = Math.max(0, ...(data?.house_totals ?? []).map((house) => house.total_km));
   el('house-ranking').replaceChildren(...(data?.house_totals ?? []).map((house, index) => {
     const item = node('li', `house-item ${colors[house.rumah_sukan] || ''}`);
     item.append(node('span', 'house-rank', `#${index + 1}`), node('strong', 'house-name', house.rumah_sukan), node('span', 'house-km', `${house.total_km.toFixed(2)} KM`), node('span', 'house-participant-count', `${house.participant_count} peserta`));
+    try {
+      const emblem = node('span', 'house-emblem');
+      emblem.setAttribute('aria-hidden', 'true');
+      emblem.append(node('span', 'house-badge', house.rumah_sukan.slice(0, 1)));
+      if (houseLogos[house.rumah_sukan]) {
+        const image = node('img', 'house-logo-image');
+        image.alt = '';
+        image.width = 42;
+        image.height = 42;
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        image.addEventListener('error', () => { image.hidden = true; });
+        image.src = houseLogos[house.rumah_sukan];
+        emblem.append(image);
+      }
+      item.append(emblem);
+    } catch { /* House decoration is optional; name, KM and comparison remain usable. */ }
+    const comparison = node('progress', 'house-comparison');
+    comparison.max = 100;
+    comparison.value = highestHouseKm > 0 ? house.total_km / highestHouseKm * 100 : 0;
+    comparison.setAttribute('aria-label', `${house.rumah_sukan}: ${house.total_km.toFixed(2)} KM, perbandingan relatif dengan rumah tertinggi`);
+    item.append(comparison);
     return item;
   }));
+  if (!data?.house_totals.length) el('house-ranking').append(node('li', 'summary-empty', data ? 'Belum ada data Rumah Sukan.' : 'Data Rumah Sukan belum tersedia.'));
   el('latest-activity').replaceChildren(...(data?.latest_activities ?? []).slice(0, 5).map((activity) => {
     const item = node('li', 'activity-item');
-    const detail = node('div');
-    detail.append(node('p', 'activity-name', activity.nama), node('p', 'activity-type', `${displayDate(activity.tarikh_aktiviti)} · ${activity.rumah_sukan || 'BELUM DITETAPKAN'}`));
-    item.append(node('span', 'activity-symbol', '↗'), detail, node('strong', 'activity-distance', `${activity.jarak_km.toFixed(2)} KM`));
+    item.append(node('p', 'activity-name', activity.nama), node('p', 'activity-date', displayDate(activity.tarikh_aktiviti)), node('p', 'activity-house', activity.rumah_sukan || 'BELUM DITETAPKAN'), node('strong', 'activity-distance', `${activity.jarak_km.toFixed(2)} KM`));
     return item;
   }));
   if (!data?.latest_activities.length) el('latest-activity').append(node('li', 'summary-empty', data ? 'Belum ada aktiviti yang disahkan.' : 'Data aktiviti belum tersedia.'));
-  const target = data?.community_target_km ?? 2000;
-  el('community-total').replaceChildren(node('strong', '', data ? data.total_km.toFixed(2) : '—'), node('span', '', ` / ${target.toLocaleString('en-US')} KM`));
-  el('community-progress').max = target;
-  el('community-progress').value = Math.min(data?.total_km ?? 0, target);
-  el('community-percentage').textContent = data ? `${(data.total_km / target * 100).toLocaleString('ms-MY', { maximumFractionDigits: 2 })}% daripada sasaran komuniti` : 'Kemajuan belum tersedia.';
 }
 async function loadDashboardSummary(force = false) {
   if (!session) return;
