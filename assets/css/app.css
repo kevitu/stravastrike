@@ -164,7 +164,31 @@ body:has(.dashboard:not([hidden])){background:#f1f3f8}.shell:has(.dashboard:not(
 #home-view .dashboard-refresh{font-size:10px;border-radius:10px;padding:0 18px}
 #home-view .dashboard-actions .primary{background:linear-gradient(105deg,#db286c,#ef5853);border-radius:10px;min-height:46px}
 #home-view .dashboard-actions .primary:hover{background:#b71d58}
-#view-dashboard .event-hero{position:relative;overflow:hidden;isolation:isolate;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px;align-items:center;padding:32px;border-radius:18px;background:radial-gradient(ellipse at 100% 0%,#a65438aa,transparent 50%),radial-gradient(ellipse at 68% 100%,#2372d940,transparent 65%),linear-gradient(115deg,#0c1933,#122b4d);color:white;box-shadow:0 12px 28px #14244712}
+#view-dashboard .event-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: center;
+  padding: 32px;
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(6, 21, 46, .94) 0%,
+      rgba(6, 21, 46, .78) 32%,
+      rgba(6, 21, 46, .48) 52%,
+      rgba(6, 21, 46, .70) 72%,
+      rgba(6, 21, 46, .86) 100%
+    ),
+    url("../img/event_runner_background.webp") center center / cover no-repeat;
+
+  color: white;
+  box-shadow: 0 12px 28px #14244712;
+}
 #view-dashboard .event-hero:before{content:'';position:absolute;z-index:-1;right:-80px;bottom:-110px;width:360px;height:300px;border:22px solid #db286c30;border-radius:90px;transform:rotate(-35deg);box-shadow:0 0 0 14px #ef853420,0 0 0 28px #2372d920;pointer-events:none}
 #view-dashboard .event-eyebrow{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:750;letter-spacing:.09em;margin:0 0 14px}
 #view-dashboard .event-eyebrow:before{content:'';width:26px;height:3px;background:#ff6b83;flex-shrink:0}
