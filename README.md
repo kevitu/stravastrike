@@ -4,7 +4,15 @@
 
 Frontend menggunakan HTML, CSS dan Vanilla JavaScript tanpa framework berat.
 
-**Status semasa:** frontend production tersedia melalui GitHub Pages, backend Apps Script deployed sebagai **Version 8** pada 1 Oktober 2026. Aliran login, submission, moderation, dashboard, sejarah peribadi dan perlindungan retry/duplicate telah diuji secara sebenar. Fungsi pembatalan sendiri oleh peserta untuk rekod PENDING telah dilaksanakan dan UI production telah dipaparkan; end-to-end cancel masih perlu direkodkan sebagai ujian release khusus.
+**Status semasa (4 Oktober 2026):** frontend production tersedia melalui GitHub Pages, backend Apps Script kekal deployed sebagai **Version 8** pada 1 Oktober 2026. Penambahbaikan terbaru meliputi retry automatik dashboard/submission, butang REFRESH dashboard, splash mobile berpusat dan input PIN sejarah mobile yang lebih besar. Perubahan reliability/UI ini hanya pada frontend dan tidak memerlukan backend version baharu. Aliran login, submission, moderation, dashboard, sejarah peribadi dan perlindungan retry/duplicate telah diuji secara sebenar pada release terdahulu. Fungsi pembatalan sendiri oleh peserta untuk rekod PENDING telah dilaksanakan dan UI production telah dipaparkan; end-to-end cancel masih perlu direkodkan sebagai ujian release khusus.
+
+## Tempoh rasmi event
+
+**STRAVA STRIKE KEVITU 2026 berlangsung dari 1 Oktober 2026 hingga hujung 31 Oktober 2026, sebelum masuk 1 November 2026 (waktu Malaysia).**
+
+Official event window ialah `1 Oktober 2026 00:00:00 ≤ waktu < 1 November 2026 00:00:00`, zon waktu **Asia/Kuala_Lumpur (UTC+08:00)**. Tempoh ini menjadi rujukan dokumentasi dan perancangan countdown, event statistics, heatmap Oktober serta Final Mode selepas event tamat. Ia tidak bermaksud sekatan tarikh atau Final Mode sudah dilaksanakan dalam production.
+
+Pihak urusetia **tidak menetapkan sasaran KM komuniti rasmi**. `2,000 KM` atau mana-mana community target dalam paparan/config sedia ada bukan KPI rasmi program; statistik komuniti merujuk pencapaian sebenar, bukan kemajuan terhadap sasaran urusetia.
 
 ## Skop rasmi sistem
 
@@ -13,7 +21,7 @@ Peranan utama sistem:
 - menerima penghantaran aktiviti dan bukti screenshot;
 - membolehkan urusetia menyemak status PENDING → SAH / BATAL;
 - mengira keputusan rasmi berdasarkan aktiviti SAH sahaja;
-- memaparkan leaderboard individu, Top 3, ranking Rumah Sukan dan sasaran komuniti;
+- memaparkan leaderboard individu, Top 3, ranking Rumah Sukan dan statistik pencapaian komuniti;
 - menyimpan sejarah aktiviti peserta serta rekod audit program;
 - memberi saluran pembatalan sendiri untuk submission PENDING yang tersalah dihantar.
 
@@ -60,16 +68,18 @@ Sesi peserta tamat selepas **12 jam tanpa aktiviti**. `localStorage` menyimpan m
 
 ## Paparan participant
 
-- **Dashboard:** KPI live, lima kedudukan teratas, podium Top 3, lima aktiviti terkini, ranking Rumah Sukan dan kemajuan sasaran komuniti.
+- **Dashboard:** statistik live, lima kedudukan teratas, podium Top 3, lima aktiviti terkini dan ranking Rumah Sukan; butang **REFRESH** memuat semula ringkasan terkini. Paparan community target sedia ada bukan sasaran rasmi atau KPI yang ditetapkan urusetia.
 - **Kedudukan:** leaderboard penuh menggunakan data live.
 - **Aktiviti:** penghantaran sebenar, receipt, sejarah sendiri, pautan bukti dan pembatalan PENDING.
 - **Peserta:** direktori aktif mengikut rumah sukan, nama A–Z dan bilangan peserta.
 
 ### Peraturan dashboard
 
-Action `dashboard_summary` menggunakan peserta aktif dan hanya aktiviti **`STATUS = SAH`**. `PENDING` dan `BATAL` tidak menyumbang kepada jumlah aktiviti, total KM, hari aktif, leaderboard, Top 3, aktiviti terkini, jumlah Rumah Sukan atau kemajuan komuniti.
+Action `dashboard_summary` menggunakan peserta aktif dan hanya aktiviti **`STATUS = SAH`**. `PENDING` dan `BATAL` tidak menyumbang kepada jumlah aktiviti, total KM, hari aktif, leaderboard, Top 3, aktiviti terkini, jumlah Rumah Sukan atau statistik pencapaian komuniti.
 
 Tarikh user-facing dipaparkan sebagai **DD/MM/YYYY**; nilai dalaman/API boleh kekal ISO `YYYY-MM-DD`.
+
+Jika request `dashboard_summary` mengalami kegagalan sementara, frontend mencuba semula sekali selepas 1 saat (maksimum dua cubaan, timeout 30 saat bagi setiap cubaan). Splash mobile dipusatkan dalam viewport dengan mengambil kira safe area peranti.
 
 ## Penghantaran aktiviti
 
@@ -90,11 +100,15 @@ Flow:
 
 Ujian sebenar pada 1 Oktober 2026 mengesahkan `ACT000013` dipulangkan semula apabila request dengan `submission_id` sama dihantar semula, dan **tiada `ACT000014` dicipta**.
 
+Mulai 4 Oktober 2026, frontend turut retry `submit_activity` secara automatik sekali selepas kegagalan sementara, menggunakan payload dan `submission_id` yang sama. Semasa retry, butang memaparkan **MENGESAHKAN PENGHANTARAN...**. Mekanisme ini menggunakan perlindungan idempotent backend sedia ada; Apps Script kekal **Version 8**.
+
 ## Sejarah dan pembatalan aktiviti peserta
 
 Action `participant_activity_history` memerlukan `kod_peserta` + PIN, mengesahkan peserta wujud, PIN betul dan status `AKTIF`, kemudian hanya mengembalikan rekod milik peserta tersebut.
 
 Sejarah memaparkan **SAH, PENDING dan BATAL**, tarikh, jarak, ID aktiviti dan pautan **LIHAT BUKTI**.
+
+Pada mobile (lebar sehingga 700px), input PIN sejarah dan butangnya diperbesarkan kepada minimum tinggi 56px; teks input PIN menggunakan saiz 20px untuk memudahkan pengesahan.
 
 Mulai backend **Version 8**, peserta boleh membatalkan rekod sendiri melalui action `participant_cancel_activity` dengan syarat:
 - aktiviti milik peserta tersebut;
@@ -131,6 +145,13 @@ Deployment penting:
 - `f1f7f95` — update login header PWA icon/cache;
 - `5a0a10a` — duplicate activity submission protection;
 - `968eabd` — participant self-cancel UI untuk PENDING.
+- `034c179` — retry `dashboard_summary` pada transient API failure (2 Oktober 2026);
+- `e597559` — dashboard **REFRESH** + mobile splash centered (2 Oktober 2026);
+- `75c942e` — input PIN sejarah mobile diperbesarkan (3 Oktober 2026);
+- `0538067` — retry `submit_activity` pada transient failure menggunakan `submission_id` sama (4 Oktober 2026);
+- `761b798` — paparkan **MENGESAHKAN PENGHANTARAN...** semasa retry submission (4 Oktober 2026).
+
+Lima commit terbaru ini ialah perubahan frontend sahaja dan tidak memerlukan deployment backend version baharu.
 
 `service_worker.js` cache static app-shell sahaja. API POST, PIN, screenshot/base64, sejarah peribadi dan moderation admin tidak dicache.
 
@@ -149,16 +170,37 @@ Telah disahkan:
 - butang **BATALKAN** dipaparkan untuk PENDING.
 
 Masih perlu E2E khusus:
+- retry automatik dashboard/submission ketika kegagalan sementara, mesej pengesahan dan ketiadaan duplicate pada aliran retry terbaru;
+- REFRESH dashboard, splash berpusat dan input PIN sejarah pada peranti mobile;
 - tekan BATALKAN → confirm → PIN → `PENDING → BATAL`;
 - history refresh dan butang BATALKAN hilang;
 - rekod BATAL kekal tidak dikira dalam scoreboard.
+
+## Roadmap dashboard — PLANNED / belum dilaksanakan
+
+Semua feature berikut telah dipersetujui untuk perancangan dan **belum dilaksanakan**:
+
+| Feature | Status |
+| --- | --- |
+| Event Countdown | PLANNED / belum dilaksanakan |
+| Today at STRAVA STRIKE | PLANNED / belum dilaksanakan |
+| Personal Progress Card | PLANNED / belum dilaksanakan |
+| Streak & Active Days | PLANNED / belum dilaksanakan |
+| House Battle enhancement | PLANNED / belum dilaksanakan |
+| Milestone / Achievement badges | PLANNED / belum dilaksanakan |
+| October Activity Heatmap | PLANNED / belum dilaksanakan |
+| Final Mode selepas event tamat | PLANNED / belum dilaksanakan |
+
+Countdown dan event statistics mesti menggunakan official event window di atas; October Activity Heatmap merujuk Oktober 2026 dan Final Mode dirancang bermula selepas event tamat pada 1 November 2026 00:00 waktu Malaysia. Progress, milestone dan statistik tidak boleh menganggap community target sebagai KPI rasmi urusetia.
+
+**Prinsip keselamatan pembangunan:** semua feature dashboard baharu ialah **read-only / progressive enhancement** dan **tidak boleh menjadi dependency kepada login atau `submit_activity`**. Kegagalan widget/statistik dashboard tidak boleh menghalang peserta login atau menghantar bukti; aliran penghantaran mesti terus tersedia secara bebas daripada widget tambahan.
 
 ## Future / TODO
 
 - annual programme/year management;
 - archive previous year dan preserve history;
 - reset leaderboard tahunan;
-- annual target configuration;
+- konfigurasi sasaran tahunan pilihan hanya jika ditetapkan urusetia untuk program akan datang; tiada sasaran KM komuniti rasmi bagi event Oktober 2026;
 - year-based participant/house configuration;
 - eksport admin CSV;
 - laporan PDF jika diperlukan;
