@@ -174,14 +174,6 @@ function renderDashboard() {
   }
   // Reuse the existing live row rendering for the compact top-five preview.
   el('dashboard-leaderboard-body').replaceChildren(...Array.from(el('leaderboard-body').children).slice(0, 5).map((row) => row.cloneNode(true)));
-  const top = data?.activity_count ? data.leaderboard.filter((person) => person.activity_count > 0).slice(0, 3) : [];
-  el('podium').replaceChildren(...top.map((person, index) => {
-    const item = node('li', `podium-place place-${index + 1}`);
-    item.append(node('span', 'medal', index + 1), node('p', 'podium-name', person.nama), node('p', 'podium-km', `${person.total_km.toFixed(2)} KM`), node('span', 'podium-step', `#${index + 1}`));
-    return item;
-  }));
-  if (!top.length) el('podium').append(node('li', 'summary-empty', data ? 'Belum ada kedudukan.' : 'Data kedudukan belum tersedia.'));
-
 const colors = { MERAH: 'red', BIRU: 'blue', HIJAU: 'green', KUNING: 'yellow' };
 
 const houseLogos = {
@@ -189,6 +181,32 @@ const houseLogos = {
   BIRU: 'assets/img/rumah_biru.jpeg',
   KUNING: 'assets/img/rumah_kuning.png'
 };
+
+  const top = data?.activity_count ? data.leaderboard.filter((person) => person.activity_count > 0).slice(0, 3) : [];
+  el('podium').replaceChildren(...top.map((person, index) => {
+    const item = node('li', `podium-place place-${index + 1}`);
+    const house = (person.rumah_sukan || '').trim().toUpperCase();
+    const emblem = node('span', `podium-house ${colors[house] || ''}`);
+    emblem.setAttribute('role', 'img');
+    emblem.setAttribute('aria-label', `Rumah Sukan: ${house || 'BELUM DITETAPKAN'}`);
+    emblem.append(node('span', 'podium-house-fallback', house.slice(0, 1) || '?'));
+    if (houseLogos[house]) {
+      const image = node('img', 'podium-house-logo');
+      image.alt = '';
+      image.width = 28;
+      image.height = 28;
+      image.decoding = 'async';
+      image.addEventListener('load', () => { emblem.children[0].hidden = true; });
+      image.addEventListener('error', () => { image.hidden = true; emblem.children[0].hidden = false; });
+      image.src = houseLogos[house];
+      emblem.append(image);
+    }
+    item.append(node('span', 'medal', index + 1), node('p', 'podium-name', person.nama), emblem, node('p', 'podium-km', `${person.total_km.toFixed(2)} KM`), node('span', 'podium-step', `#${index + 1}`));
+    return item;
+  }));
+  if (!top.length) el('podium').append(node('li', 'summary-empty', data ? 'Belum ada kedudukan.' : 'Data kedudukan belum tersedia.'));
+
+
 
 const highestHouseKm = Math.max(0, ...(data?.house_totals ?? []).map((house) => house.total_km));
   el('house-ranking').replaceChildren(...(data?.house_totals ?? []).map((house, index) => {

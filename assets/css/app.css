@@ -368,3 +368,6 @@ body:has(.dashboard:not([hidden])){background:#f1f3f8}.shell:has(.dashboard:not(
   #view-dashboard .house-emblem{width:36px;height:36px;border-radius:9px}
   #view-dashboard .house-name,#view-dashboard .house-km{font-size:10px}
 }
+
+/* Compact house badge between the podium name and distance. */
+.podium-house{display:grid;place-items:center;position:relative;width:28px;height:28px;margin:0 auto 8px}.podium-house-fallback{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#e8edf4;color:#37506f;font-size:12px;font-weight:800}.podium-house.red .podium-house-fallback{background:#ffe5e5;color:#b52222}.podium-house.blue .podium-house-fallback{background:#e5efff;color:#235eab}.podium-house.green .podium-house-fallback{background:#e3f5e9;color:#24713d}.podium-house.yellow .podium-house-fallback{background:#fff4ce;color:#896500}.podium-house-logo{position:absolute;inset:0;width:28px;height:28px;object-fit:contain}
