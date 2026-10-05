@@ -201,7 +201,13 @@ const houseLogos = {
       image.src = houseLogos[house];
       emblem.append(image);
     }
-    item.append(node('span', 'medal', index + 1), node('p', 'podium-name', person.nama), emblem, node('p', 'podium-km', `${person.total_km.toFixed(2)} KM`), node('span', 'podium-step', `#${index + 1}`));
+    const rankImage = node('img', 'podium-rank-image');
+    rankImage.src = `assets/img/podium_rank_${index + 1}.png`;
+    rankImage.alt = `Kedudukan ${index + 1}`;
+    rankImage.width = index === 0 ? 56 : 48;
+    rankImage.height = index === 0 ? 56 : 48;
+    rankImage.decoding = 'async';
+    item.append(rankImage, node('p', 'podium-name', person.nama), emblem, node('p', 'podium-km', `${person.total_km.toFixed(2)} KM`), node('span', 'podium-step', `#${index + 1}`));
     return item;
   }));
   if (!top.length) el('podium').append(node('li', 'summary-empty', data ? 'Belum ada kedudukan.' : 'Data kedudukan belum tersedia.'));
