@@ -4,7 +4,7 @@
 
 Frontend menggunakan HTML, CSS dan Vanilla JavaScript tanpa framework berat.
 
-**Status semasa (4 Oktober 2026):** frontend production tersedia melalui GitHub Pages, backend Apps Script kekal deployed sebagai **Version 8** pada 1 Oktober 2026. Penambahbaikan terbaru meliputi retry automatik dashboard/submission, butang REFRESH dashboard, splash mobile berpusat dan input PIN sejarah mobile yang lebih besar. Perubahan reliability/UI ini hanya pada frontend dan tidak memerlukan backend version baharu. Aliran login, submission, moderation, dashboard, sejarah peribadi dan perlindungan retry/duplicate telah diuji secara sebenar pada release terdahulu. Fungsi pembatalan sendiri oleh peserta untuk rekod PENDING telah dilaksanakan dan UI production telah dipaparkan; end-to-end cancel masih perlu direkodkan sebagai ujian release khusus.
+**Status semasa (5 October 2026):** frontend production tersedia melalui GitHub Pages, backend Apps Script kekal deployed sebagai **Version 8** pada 1 Oktober 2026. Penambahbaikan terbaru meliputi logo rasmi Rumah KUNING, runner background Event Countdown hero, logo Rumah Sukan pada Top 3 Individu, aset BIRU yang dikemas dan medal/rank PNG #1/#2/#3. Perubahan ini hanya pada frontend; tiada backend/API contract berubah. Retry automatik dashboard/submission, butang REFRESH dashboard dan penambahbaikan mobile terdahulu kekal. Aliran login, submission, moderation, dashboard, sejarah peribadi dan perlindungan retry/duplicate telah diuji secara sebenar pada release terdahulu. Fungsi pembatalan sendiri oleh peserta untuk rekod PENDING telah dilaksanakan dan UI production telah dipaparkan; end-to-end cancel masih perlu direkodkan sebagai ujian release khusus.
 
 **Release Dashboard UI Refresh + Event Countdown:** **production deployed and verified** di GitHub Pages pada **4 Oktober 2026**, melalui commit **`6e14457` — `feat: refresh dashboard event countdown`**. Production smoke test **PASS**, termasuk REFRESH memuatkan data semasa dan HANTAR AKTIVITI menerima success receipt. Backend production kekal **Apps Script Version 8**; tiada backend deployment diperlukan untuk release ini.
 
@@ -88,9 +88,10 @@ Jika request `dashboard_summary` mengalami kegagalan sementara, frontend mencuba
 - **Countdown:** frontend-only, dikira setiap saat tanpa API/network request dan tanpa dependency kepada `dashboard_summary`. State ialah **EVENT BELUM BERMULA**, **SEDANG BERLANGSUNG** dan **STRAVA STRIKE KEVITU 2026 TAMAT**; semasa event, baki hari/jam/minit/saat dipaparkan.
 - **Event Day / Time Progress:** **HARI X / 31** dan bar nipis berdasarkan elapsed event time; sebelum event hari 0 / progress 0%, semasa event hari 1–31 mengikut waktu Malaysia, selepas event hari 31 / progress 100%.
 - **Empat KPI:** **Peserta Aktif**, **Jumlah KM SAH**, **Jumlah Aktiviti SAH** dan **Hari Aktif**, daripada medan API sedia ada `participant_count`, `total_km`, `activity_count` dan `active_days`.
-- **Kedudukan Teratas / Top 3 Individu:** kedudukan kekal berdasarkan data SAH sebenar; podium dikemas kini secara visual.
+- **Event Countdown hero:** menggunakan runner background `assets/img/event_runner_background.webp`.
+- **Kedudukan Teratas / Top 3 Individu:** kedudukan kekal berdasarkan data SAH sebenar. Medal/rank menggunakan `assets/img/podium_rank_1.png`, `assets/img/podium_rank_2.png` dan `assets/img/podium_rank_3.png`; #1 sedikit lebih besar (56px) daripada #2/#3 (48px), dengan `object-fit: contain`. Logo Rumah Sukan berada di bawah nama peserta; struktur podium, nama, KM dan logic ranking kekal. Paparan responsive pada desktop/mobile/PWA.
 - **Ranking Rumah Sukan:** bar ialah perbandingan relatif kepada rumah dengan KM tertinggi (100% visual); rumah lain relatif kepadanya. Jika semua rumah 0 KM, semua bar 0%. Ini bukan progress kepada sasaran rasmi.
-- **Logo rumah:** MERAH menggunakan `assets/img/rumah_merah.png`; BIRU menggunakan `assets/img/rumah_biru.jpeg` dalam frame seragam yang kemas untuk latar putih JPEG. HIJAU/KUNING menggunakan fallback badge warna sehingga asset rasmi tersedia. Image/logo failure memaparkan badge fallback tanpa menghilangkan nama rumah, KM, ranking atau bar relatif.
+- **Logo rumah:** MERAH menggunakan logo rasmi `assets/img/rumah_merah.png`; BIRU menggunakan logo rasmi `assets/img/rumah_biru.jpeg` dengan aset yang dikemas; KUNING menggunakan logo rasmi `assets/img/rumah_kuning.png`. HIJAU sahaja masih menggunakan fallback badge warna sehingga asset rasmi tersedia. Image/logo failure memaparkan badge fallback tanpa menghilangkan nama rumah, KM, ranking atau bar relatif.
 - **Aktiviti Terkini:** hanya nama peserta, tarikh aktiviti, Rumah Sukan dan jarak daripada field production sedia ada; tiada jenis aktiviti, avatar, masa aktiviti atau data mockup direka.
 - **Participant identity:** nama peserta, Rumah Sukan dan LOG KELUAR dipolish secara compact menggunakan session sedia ada; session/logout logic tidak berubah.
 
@@ -172,12 +173,24 @@ Deployment penting:
 - `0538067` — retry `submit_activity` pada transient failure menggunakan `submission_id` sama (4 Oktober 2026);
 - `761b798` — paparkan **MENGESAHKAN PENGHANTARAN...** semasa retry submission (4 Oktober 2026).
 - `6e14457` — `feat: refresh dashboard event countdown` (4 Oktober 2026); Dashboard UI Refresh + Event Countdown deployed ke production GitHub Pages, smoke test **PASS**.
+- `45621f9` — tambah logo rasmi Rumah KUNING.
+- `144ee62` — tambah runner background pada Event Countdown hero.
+- `59624aa` — tambah logo Rumah Sukan pada Top 3 Individu dan kemaskan aset BIRU.
+- `938bbcd` — ganti badge ranking Top 3 dengan PNG `podium_rank_1.png`, `podium_rank_2.png`, `podium_rank_3.png`.
 
 Perubahan reliability/UI dan release Dashboard ini ialah frontend sahaja dan tidak memerlukan deployment backend version baharu.
 
 `service_worker.js` cache static app-shell sahaja. API POST, PIN, screenshot/base64, sejarah peribadi dan moderation admin tidak dicache.
 
 ## Status verifikasi
+
+### Verification frontend terkini — 5 October 2026
+
+- `node --test tests/dashboard-refresh.test.cjs` — **10/10 PASS**.
+- `git diff --check` — **PASS**, amaran LF → CRLF sahaja.
+- Visual check desktop dan PWA/mobile — **PASS**.
+- Responsive checks podium medal update pada **1440, 768, 390 dan 320px** — **PASS**, tanpa overflow.
+- Backend production kekal **Apps Script Version 8**; tiada backend/API contract berubah. Verification ini tidak mengubah status E2E pending atau roadmap PLANNED.
 
 ### Verification release Dashboard UI Refresh + Event Countdown
 
@@ -201,7 +214,7 @@ Preview browser menggunakan data awam production untuk semakan visual. Ujian iso
 - **REFRESH** berjaya memuatkan data semasa.
 - **HANTAR AKTIVITI** production berjaya menghantar aktiviti sebenar sehingga menerima **success receipt**.
 - Backend kekal **Apps Script Version 8**; tiada backend/GAS deployment atau perubahan API contract diperlukan.
-- HIJAU/KUNING masih menggunakan fallback badge sehingga logo rasmi diterima. Final Mode dan submission cutoff kekal **PLANNED / belum dilaksanakan**.
+- Status logo terkini (5 October 2026): MERAH, BIRU dan KUNING menggunakan logo rasmi; HIJAU sahaja masih menggunakan fallback badge. Final Mode dan submission cutoff kekal **PLANNED / belum dilaksanakan**.
 
 ### Verification terdahulu dan E2E pending
 
@@ -235,7 +248,7 @@ Status IMPLEMENTED merujuk release Dashboard UI Refresh yang **production deploy
 | Event Day / Time Progress | IMPLEMENTED dalam release ini |
 | House Ranking relative comparison | IMPLEMENTED dalam release ini |
 | House logo support/fallback | IMPLEMENTED dalam release ini |
-| House Battle enhancement (asas) | IMPLEMENTED; logo rasmi HIJAU/KUNING menunggu asset |
+| House Battle enhancement (asas) | IMPLEMENTED; logo rasmi HIJAU sahaja menunggu asset |
 | Today at STRAVA STRIKE | PLANNED / belum dilaksanakan |
 | Personal Progress Card | PLANNED / belum dilaksanakan |
 | Streak & Active Days | PLANNED / belum dilaksanakan |
@@ -243,7 +256,7 @@ Status IMPLEMENTED merujuk release Dashboard UI Refresh yang **production deploy
 | October Activity Heatmap | PLANNED / belum dilaksanakan |
 | Final Mode selepas event tamat | PLANNED / belum dilaksanakan |
 
-Enhancement asas House Battle meliputi bar relatif dan logo/fallback; asset rasmi HIJAU/KUNING masih menunggu. Event statistics dan October Activity Heatmap yang dirancang perlu menggunakan official event window. Final Mode selepas 1 November 2026 00:00 waktu Malaysia kekal PLANNED; hero tamat tidak melaksanakan Final Mode atau submission cutoff. Progress, milestone dan statistik tidak boleh menganggap community target sebagai KPI rasmi urusetia.
+Enhancement asas House Battle meliputi bar relatif dan logo/fallback; asset rasmi HIJAU sahaja masih menunggu; MERAH, BIRU dan KUNING menggunakan logo rasmi. Event statistics dan October Activity Heatmap yang dirancang perlu menggunakan official event window. Final Mode selepas 1 November 2026 00:00 waktu Malaysia kekal PLANNED; hero tamat tidak melaksanakan Final Mode atau submission cutoff. Progress, milestone dan statistik tidak boleh menganggap community target sebagai KPI rasmi urusetia.
 
 **Prinsip keselamatan pembangunan:** semua feature dashboard baharu ialah **read-only / progressive enhancement** dan **tidak boleh menjadi dependency kepada login atau `submit_activity`**. Kegagalan widget/statistik dashboard tidak boleh menghalang peserta login atau menghantar bukti; aliran penghantaran mesti terus tersedia secara bebas daripada widget tambahan.
 
