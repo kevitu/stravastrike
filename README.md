@@ -4,7 +4,7 @@
 
 Frontend menggunakan HTML, CSS dan Vanilla JavaScript tanpa framework berat.
 
-**Status semasa (5 October 2026):** frontend production tersedia melalui GitHub Pages, backend Apps Script kekal deployed sebagai **Version 8** pada 1 Oktober 2026. Penambahbaikan terbaru meliputi logo rasmi Rumah KUNING, runner background Event Countdown hero, logo Rumah Sukan pada Top 3 Individu, aset BIRU yang dikemas dan medal/rank PNG #1/#2/#3. Perubahan ini hanya pada frontend; tiada backend/API contract berubah. Retry automatik dashboard/submission, butang REFRESH dashboard dan penambahbaikan mobile terdahulu kekal. Aliran login, submission, moderation, dashboard, sejarah peribadi dan perlindungan retry/duplicate telah diuji secara sebenar pada release terdahulu. Fungsi pembatalan sendiri oleh peserta untuk rekod PENDING telah dilaksanakan dan UI production telah dipaparkan; end-to-end cancel masih perlu direkodkan sebagai ujian release khusus.
+**Status semasa (6 October 2026):** frontend production tersedia melalui GitHub Pages, backend Apps Script production kini **Version 9**, yang menambah field read-only `jantina` kepada setiap item `leaderboard` dalam `dashboard_summary`. Penambahbaikan terbaru meliputi logo rasmi Rumah KUNING, runner background Event Countdown hero, logo Rumah Sukan pada Top 3 Individu, aset BIRU yang dikemas dan medal/rank PNG #1/#2/#3. Penambahbaikan logo, background dan medal ini hanya pada frontend; tambahan backend Version 9 terhad kepada field read-only `jantina`. Retry automatik dashboard/submission, butang REFRESH dashboard dan penambahbaikan mobile terdahulu kekal. Aliran login, submission, moderation, dashboard, sejarah peribadi dan perlindungan retry/duplicate telah diuji secara sebenar pada release terdahulu. Fungsi pembatalan sendiri oleh peserta untuk rekod PENDING telah dilaksanakan dan UI production telah dipaparkan; end-to-end cancel masih perlu direkodkan sebagai ujian release khusus.
 
 **Release Dashboard UI Refresh + Event Countdown:** **production deployed and verified** di GitHub Pages pada **4 Oktober 2026**, melalui commit **`6e14457` — `feat: refresh dashboard event countdown`**. Production smoke test **PASS**, termasuk REFRESH memuatkan data semasa dan HANTAR AKTIVITI menerima success receipt. Backend production kekal **Apps Script Version 8**; tiada backend deployment diperlukan untuk release ini.
 
@@ -144,7 +144,7 @@ Pembatalan menukar `PENDING → BATAL`; screenshot asal **tidak dipadam** untuk 
 
 Admin menggunakan `admin.html`, Admin ID + PIN, sesi **2 jam tanpa aktiviti**, senarai PENDING dan tindakan **SAHKAN / BATALKAN**. Credentials admin disimpan dalam Apps Script Script Properties dan tidak di-hardcode pada frontend.
 
-## API tersedia — Apps Script Version 8
+## API tersedia — Apps Script Version 9
 
 | Action | Kegunaan |
 | --- | --- |
@@ -184,7 +184,13 @@ Perubahan reliability/UI dan release Dashboard ini ialah frontend sahaja dan tid
 
 ## Status verifikasi
 
-### Verification frontend terkini — 5 October 2026
+### Top 5 Mengikut Jantina — verified (6 October 2026)
+
+Berdasarkan pengesahan production yang dilaporkan, **Apps Script Version 9** menambah field read-only `jantina` kepada `dashboard_summary`. **Top 5 Mengikut Jantina telah verified menggunakan production endpoint**; kesemua **35 peserta aktif** mempunyai canonical gender valid (`LELAKI` / `PEREMPUAN`) semasa verification. **Desktop/local visual verification PASS**. Keseluruhan leaderboard, Top 3 Individu, jumlah KM SAH dan Ranking Rumah Sukan tidak berubah.
+
+Paparan kekal **TOP 5 MENGIKUT JANTINA**, subteks **Kedudukan berdasarkan jumlah KM SAH**, dan kolum **LELAKI / WANITA**. `WANITA` ialah label paparan sahaja; backend/API dan filter kekal `LELAKI` / `PEREMPUAN`. Rujuk [nota audit](docs/TOP5_GENDER_REVIEW.md). Catatan Version 8 di bawah ialah sejarah release terdahulu; status production semasa ialah Version 9.
+
+### Verification frontend terdahulu — 5 October 2026
 
 - `node --test tests/dashboard-refresh.test.cjs` — **10/10 PASS**.
 - `git diff --check` — **PASS**, amaran LF → CRLF sahaja.

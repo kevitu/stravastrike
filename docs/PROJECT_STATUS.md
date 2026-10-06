@@ -1,10 +1,10 @@
 # STRAVA STRIKE KEVITU 2026 — Project Status
 
-Last updated: **5 October 2026** (Malaysia)
+Last updated: **6 October 2026** (Malaysia)
 
-**Current phase:** production MVP live di GitHub Pages. Backend Apps Script deployed sebagai **Version 8**. Duplicate/retry protection telah diuji end-to-end; participant self-cancel untuk aktiviti PENDING telah dilaksanakan dan UI production telah dipaparkan.
+**Current phase:** production MVP live di GitHub Pages. Backend Apps Script production kini **Version 9**, yang menambah field read-only `jantina` kepada `dashboard_summary`. Duplicate/retry protection telah diuji end-to-end; participant self-cancel untuk aktiviti PENDING telah dilaksanakan dan UI production telah dipaparkan.
 
-Production frontend terkini merangkumi logo rasmi Rumah KUNING (`45621f9`), runner background Event Countdown hero (`144ee62`), logo Rumah Sukan pada Top 3 Individu dan aset BIRU yang dikemas (`59624aa`), serta medal/rank PNG Top 3 (`938bbcd`). Dashboard UI Refresh + Event Countdown (`6e14457`), retry automatik dashboard/submission dan penambahbaikan UI mobile terdahulu kekal. Backend production kekal **Apps Script Version 8** yang deployed pada 1 Oktober 2026; perubahan terbaru hanya frontend dan tiada backend/API contract berubah. Ujian duplicate/retry terdahulu tidak menggantikan verification khusus aliran retry automatik terbaru.
+Production frontend terkini merangkumi logo rasmi Rumah KUNING (`45621f9`), runner background Event Countdown hero (`144ee62`), logo Rumah Sukan pada Top 3 Individu dan aset BIRU yang dikemas (`59624aa`), serta medal/rank PNG Top 3 (`938bbcd`). Dashboard UI Refresh + Event Countdown (`6e14457`), retry automatik dashboard/submission dan penambahbaikan UI mobile terdahulu kekal. Penambahbaikan frontend yang disenaraikan ini tidak mengubah backend; status production semasa ialah **Apps Script Version 9** dengan tambahan field read-only `jantina`. Ujian duplicate/retry terdahulu tidak menggantikan verification khusus aliran retry automatik terbaru.
 
 **Release progress:** Dashboard UI Refresh + Event Countdown telah **production deployed and verified** di GitHub Pages pada **4 Oktober 2026**, melalui commit **`6e14457` — `feat: refresh dashboard event countdown`**. Production smoke test **PASS**, termasuk REFRESH dan submission sebenar sehingga success receipt. Backend production kekal **Apps Script Version 8**; tiada backend deployment diperlukan untuk release ini.
 
@@ -66,7 +66,20 @@ Backend/GAS/API contract tidak berubah; backend production kekal **Apps Script V
 - cancel PENDING;
 - admin/moderation.
 
-### Verification frontend terkini — PASS (5 October 2026)
+### Top 5 Mengikut Jantina — verified (6 October 2026)
+
+Berdasarkan pengesahan production yang dilaporkan:
+
+- [x] Apps Script production **Version 9** menambah field read-only `jantina` pada setiap item `leaderboard` dalam `dashboard_summary`.
+- [x] Top 5 Mengikut Jantina verified menggunakan production endpoint.
+- [x] Kesemua **35 peserta aktif** mempunyai canonical gender valid (`LELAKI` / `PEREMPUAN`) semasa verification.
+- [x] Desktop/local visual verification **PASS**.
+- [x] Keseluruhan leaderboard, Top 3 Individu, jumlah KM SAH dan Ranking Rumah Sukan tidak berubah.
+- [x] Tajuk **TOP 5 MENGIKUT JANTINA**, subteks **Kedudukan berdasarkan jumlah KM SAH**, kolum **LELAKI / WANITA**. `WANITA` ialah label paparan sahaja; backend/API/filter kekal `LELAKI` / `PEREMPUAN`.
+
+Rujuk [nota audit](TOP5_GENDER_REVIEW.md). Catatan Version 8 di bawah ialah sejarah release terdahulu; status production semasa ialah Version 9.
+
+### Verification frontend terdahulu — PASS (5 October 2026)
 
 - [x] `node --test tests/dashboard-refresh.test.cjs` — **10/10 PASS**.
 - [x] `git diff --check` — **PASS**, amaran LF → CRLF sahaja.
@@ -163,8 +176,9 @@ Masih perlu verification sebenar:
 | 6 | Dashboard/history/admin MVP |
 | 7 | Idempotent retry dengan `SUBMISSION_ID` |
 | 8 | Participant self-cancel PENDING |
+| 9 | Field read-only `jantina` pada `dashboard_summary` untuk Top 5 Mengikut Jantina |
 
-Backend production semasa kekal **Version 8**; tiada version baharu diperlukan untuk commit frontend terkini sehingga 5 October 2026.
+Backend production semasa ialah **Version 9** dengan tambahan field read-only `jantina` pada `dashboard_summary`. Release frontend sehingga 5 October 2026 sebelum ini menggunakan Version 8.
 
 Dashboard UI Refresh + Event Countdown juga frontend-only dan tidak memerlukan deployment backend atau perubahan API contract.
 

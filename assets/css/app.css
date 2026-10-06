@@ -368,5 +368,39 @@ body:has(.dashboard:not([hidden])){background:#f1f3f8}.shell:has(.dashboard:not(
   #view-dashboard .house-name,#view-dashboard .house-km{font-size:10px}
 }
 
+/* Category ranking follows the overall leaders, with quiet house decoration. */
+#view-dashboard .dashboard-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+#view-dashboard .category-ranking{grid-column:1 / -1;grid-row:2;position:relative;overflow:hidden;background:#fff}
+#view-dashboard .house-ranking{grid-column:1 / -1;grid-row:3}
+#view-dashboard #dashboard-activity-slot{grid-column:1 / -1;grid-row:4}
+.category-watermark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:260px;max-width:75%;height:auto;opacity:.1;pointer-events:none;object-fit:contain}
+.category-content{position:relative;z-index:1}
+.category-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:32px;margin-top:20px}
+.category-group{min-width:0;--category-accent:#235eab}
+.category-female{--category-accent:#b91c58;border-left:1px solid #e7ecf3;padding-left:32px}
+.category-group h3{font-size:14px;letter-spacing:.08em;color:var(--category-accent);margin:0 0 8px}
+.category-list{list-style:none;margin:0;padding:0}
+.category-row{display:grid;grid-template-columns:26px minmax(0,1fr) 28px auto;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid #e7ecf3;font-size:14px;line-height:1.5}
+.category-row:last-child{border-bottom:0}
+.category-rank{color:#63708a;font-weight:750;font-variant-numeric:tabular-nums}
+.category-first .category-rank{color:var(--category-accent)}
+.category-name{min-width:0;overflow-wrap:anywhere;font-weight:650}
+.category-km{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:13px;font-weight:750;color:var(--navy)}
+.category-row .podium-house{margin:0}
+.category-empty{font-size:14px;color:#526079;line-height:1.6;padding:14px 0}
+@media(max-width:700px){
+  #view-dashboard .category-ranking{order:2}
+  #view-dashboard .house-ranking{order:3}
+  #view-dashboard #dashboard-activity-slot{order:4}
+  .category-columns{grid-template-columns:minmax(0,1fr);gap:24px;margin-top:18px}
+  .category-female{border-left:0;border-top:1px solid #e7ecf3;padding:20px 0 0}
+  .category-row{grid-template-columns:24px minmax(0,1fr) 28px;gap:6px 9px}
+  .category-rank{grid-row:1 / span 2}
+  .category-name{grid-column:2;grid-row:1}
+  .category-row .podium-house{grid-column:3;grid-row:1 / span 2}
+  .category-km{grid-column:2;grid-row:2}
+  .category-watermark{width:220px}
+}
+
 /* Compact house badge between the podium name and distance. */
 .podium-house{display:grid;place-items:center;position:relative;width:28px;height:28px;margin:0 auto 8px}.podium-house-fallback{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#e8edf4;color:#37506f;font-size:12px;font-weight:800}.podium-house.red .podium-house-fallback{background:#ffe5e5;color:#b52222}.podium-house.blue .podium-house-fallback{background:#e5efff;color:#235eab}.podium-house.green .podium-house-fallback{background:#e3f5e9;color:#24713d}.podium-house.yellow .podium-house-fallback{background:#fff4ce;color:#896500}.podium-house-logo{position:absolute;inset:0;width:28px;height:28px;object-fit:contain}

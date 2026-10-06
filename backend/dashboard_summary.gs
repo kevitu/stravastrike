@@ -8,7 +8,7 @@
 function getDashboardSummary_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) throw new Error('Spreadsheet tidak tersedia.');
-  const participants = dashboardSummaryReadRows_(ss, SHEET_PESERTA, ['KOD_PESERTA', 'NAMA', 'STATUS', 'RUMAH_SUKAN']);
+  const participants = dashboardSummaryReadRows_(ss, SHEET_PESERTA, ['KOD_PESERTA', 'NAMA', 'STATUS', 'RUMAH_SUKAN', 'JANTINA']);
   const activities = dashboardSummaryReadRows_(ss, SHEET_AKTIVITI, ['ID_AKTIVITI', 'TIMESTAMP', 'KOD_PESERTA', 'TARIKH_AKTIVITI', 'JARAK_KM', 'STATUS']);
   return dashboardSummaryAggregate_(participants, activities);
 }
@@ -57,7 +57,9 @@ function dashboardSummaryAggregate_(participantRows, activityRows) {
     const name = String(row.NAMA || '').trim();
     if (!code || !name) throw new Error('Maklumat peserta aktif tidak lengkap.');
     if (participants.has(code)) throw new Error('Kod peserta aktif berulang.');
-    participants.set(code, { kod_peserta: code, nama: name, rumah_sukan: String(row.RUMAH_SUKAN || '').trim().toUpperCase(), total_km: 0, activity_count: 0 });
+    const normalizedGender = String(row.JANTINA ?? '').trim().toUpperCase();
+    const gender = normalizedGender === 'LELAKI' || normalizedGender === 'PEREMPUAN' ? normalizedGender : '';
+    participants.set(code, { jantina: gender, kod_peserta: code, nama: name, rumah_sukan: String(row.RUMAH_SUKAN || '').trim().toUpperCase(), total_km: 0, activity_count: 0 });
   });
   const houses = ['MERAH', 'BIRU', 'HIJAU', 'KUNING'].map(function (house) { return { rumah_sukan: house, total_km: 0, participant_count: 0 }; });
   participants.forEach(function (person) { const house = houses.find(function (item) { return item.rumah_sukan === person.rumah_sukan; }); if (house) house.participant_count++; });
@@ -85,7 +87,7 @@ function dashboardSummaryAggregate_(participantRows, activityRows) {
     approved.push({ id_aktiviti: String(row.ID_AKTIVITI || '').trim(), kod_peserta: person.kod_peserta, nama: person.nama, rumah_sukan: person.rumah_sukan, tarikh_aktiviti: date, jarak_km: km, timestamp: isFinite(timestamp) ? timestamp : 0 });
   });
   const round = function (value) { return Number(value.toPrecision(15)); };
-  const leaderboard = Array.from(participants.values()).sort(function (a, b) { return round(b.total_km) - round(a.total_km) || a.nama.localeCompare(b.nama, 'ms', { sensitivity: 'base' }) || a.kod_peserta.localeCompare(b.kod_peserta); }).map(function (person, index) { return { rank: index + 1, kod_peserta: person.kod_peserta, nama: person.nama, rumah_sukan: person.rumah_sukan, total_km: round(person.total_km), activity_count: person.activity_count }; });
+  const leaderboard = Array.from(participants.values()).sort(function (a, b) { return round(b.total_km) - round(a.total_km) || a.nama.localeCompare(b.nama, 'ms', { sensitivity: 'base' }) || a.kod_peserta.localeCompare(b.kod_peserta); }).map(function (person, index) { return { jantina: person.jantina, rank: index + 1, kod_peserta: person.kod_peserta, nama: person.nama, rumah_sukan: person.rumah_sukan, total_km: round(person.total_km), activity_count: person.activity_count }; });
   approved.sort(function (a, b) { return b.tarikh_aktiviti.localeCompare(a.tarikh_aktiviti) || b.timestamp - a.timestamp || b.id_aktiviti.localeCompare(a.id_aktiviti); });
   const latest = approved.slice(0, 5).map(function (activity) { return { id_aktiviti: activity.id_aktiviti, kod_peserta: activity.kod_peserta, nama: activity.nama, rumah_sukan: activity.rumah_sukan, tarikh_aktiviti: activity.tarikh_aktiviti, jarak_km: activity.jarak_km }; });
   const houseTotals = houses.map(function (house) { return { rumah_sukan: house.rumah_sukan, total_km: round(house.total_km), participant_count: house.participant_count }; }).sort(function (a, b) { return b.total_km - a.total_km || a.rumah_sukan.localeCompare(b.rumah_sukan); });

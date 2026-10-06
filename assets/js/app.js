@@ -182,9 +182,7 @@ const houseLogos = {
   KUNING: 'assets/img/rumah_kuning.png'
 };
 
-  const top = data?.activity_count ? data.leaderboard.filter((person) => person.activity_count > 0).slice(0, 3) : [];
-  el('podium').replaceChildren(...top.map((person, index) => {
-    const item = node('li', `podium-place place-${index + 1}`);
+  function houseEmblem(person) {
     const house = (person.rumah_sukan || '').trim().toUpperCase();
     const emblem = node('span', `podium-house ${colors[house] || ''}`);
     emblem.setAttribute('role', 'img');
@@ -201,6 +199,13 @@ const houseLogos = {
       image.src = houseLogos[house];
       emblem.append(image);
     }
+    return emblem;
+  }
+
+  const top = data?.activity_count ? data.leaderboard.filter((person) => person.activity_count > 0).slice(0, 3) : [];
+  el('podium').replaceChildren(...top.map((person, index) => {
+    const item = node('li', `podium-place place-${index + 1}`);
+    const emblem = houseEmblem(person);
     const rankImage = node('img', 'podium-rank-image');
     rankImage.src = `assets/img/podium_rank_${index + 1}.png`;
     rankImage.alt = `Kedudukan ${index + 1}`;
@@ -214,6 +219,25 @@ const houseLogos = {
 
 
 
+  // Gender ranking is optional and preserves the official leaderboard order.
+  try {
+    for (const [gender, id] of [['LELAKI', 'category-men'], ['PEREMPUAN', 'category-women']]) {
+      const list = el(id);
+      if (!list) continue;
+      const people = (data?.leaderboard ?? []).filter(person => person.jantina === gender).slice(0, 5);
+      list.replaceChildren(...people.map((person, index) => {
+        const row = node('li', `category-row${index === 0 ? ' category-first' : ''}`);
+        row.append(node('span', 'category-rank', `#${index + 1}`), node('strong', 'category-name', person.nama), houseEmblem(person), node('span', 'category-km', `${person.total_km.toFixed(2)} KM SAH`));
+        return row;
+      }));
+      if (!people.length) list.append(node('li', 'category-empty', 'Belum ada kedudukan untuk kumpulan ini.'));
+    }
+  } catch {
+    // A failed enhancement must not interrupt the dashboard or participant flows.
+    for (const id of ['category-men', 'category-women']) {
+      try { el(id)?.replaceChildren(node('li', 'category-empty', 'Kedudukan mengikut jantina belum tersedia.')); } catch { /* Optional DOM may be unavailable. */ }
+    }
+  }
 const highestHouseKm = Math.max(0, ...(data?.house_totals ?? []).map((house) => house.total_km));
   el('house-ranking').replaceChildren(...(data?.house_totals ?? []).map((house, index) => {
     const item = node('li', `house-item ${colors[house.rumah_sukan] || ''}`);
