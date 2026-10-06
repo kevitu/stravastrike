@@ -2,11 +2,11 @@
 
 Last updated: **6 October 2026** (Malaysia)
 
-**Current phase:** production MVP live di GitHub Pages. Backend Apps Script production kini **Version 9**, yang menambah field read-only `jantina` kepada `dashboard_summary`. Duplicate/retry protection telah diuji end-to-end; participant self-cancel untuk aktiviti PENDING telah dilaksanakan dan UI production telah dipaparkan.
+**Current phase:** production MVP live di GitHub Pages; Top 5 Mengikut Jantina **PRODUCTION DEPLOYED AND VERIFIED** pada 6 October 2026 melalui `082e15d — feat: add top 5 gender rankings`, pushed ke `main`. Backend Apps Script production kini **Version 9**, yang menambah field read-only `jantina` kepada `dashboard_summary`. Duplicate/retry protection telah diuji end-to-end; participant self-cancel untuk aktiviti PENDING telah dilaksanakan dan UI production telah dipaparkan.
 
 Production frontend terkini merangkumi logo rasmi Rumah KUNING (`45621f9`), runner background Event Countdown hero (`144ee62`), logo Rumah Sukan pada Top 3 Individu dan aset BIRU yang dikemas (`59624aa`), serta medal/rank PNG Top 3 (`938bbcd`). Dashboard UI Refresh + Event Countdown (`6e14457`), retry automatik dashboard/submission dan penambahbaikan UI mobile terdahulu kekal. Penambahbaikan frontend yang disenaraikan ini tidak mengubah backend; status production semasa ialah **Apps Script Version 9** dengan tambahan field read-only `jantina`. Ujian duplicate/retry terdahulu tidak menggantikan verification khusus aliran retry automatik terbaru.
 
-**Release progress:** Dashboard UI Refresh + Event Countdown telah **production deployed and verified** di GitHub Pages pada **4 Oktober 2026**, melalui commit **`6e14457` — `feat: refresh dashboard event countdown`**. Production smoke test **PASS**, termasuk REFRESH dan submission sebenar sehingga success receipt. Backend production kekal **Apps Script Version 8**; tiada backend deployment diperlukan untuk release ini.
+**Release progress:** Dashboard UI Refresh + Event Countdown telah **production deployed and verified** di GitHub Pages pada **4 Oktober 2026**, melalui commit **`6e14457` — `feat: refresh dashboard event countdown`**. Production smoke test **PASS**, termasuk REFRESH dan submission sebenar sehingga success receipt. Dalam release 4 October 2026, backend menggunakan **Apps Script Version 8** (historical context); backend production semasa ialah **Version 9**.
 
 ## Product scope
 
@@ -36,7 +36,7 @@ Pihak urusetia **tidak menetapkan sasaran KM komuniti rasmi**. Paparan **Sasaran
 
 ## Dashboard UI Refresh + Event Countdown — IMPLEMENTED
 
-- [x] Dashboard official sports event / premium style, responsive: Hero → KPI → Kedudukan Teratas | Top 3 Individu | Ranking Rumah Sukan → Aktiviti Terkini pada desktop; layout tablet/mobile menyesuaikan ruang.
+- [x] Dashboard official sports event / premium style, responsive: Hero → KPI → Kedudukan Teratas + Top 3 → Top 5 Mengikut Jantina → Ranking Rumah Sukan → Aktiviti Terkini pada desktop; layout tablet/mobile menyesuaikan ruang.
 - [x] Event Countdown menggunakan official event window +08:00; state **EVENT BELUM BERMULA**, **SEDANG BERLANGSUNG** dan **STRAVA STRIKE KEVITU 2026 TAMAT**.
 - [x] Countdown frontend-only, update setiap saat tanpa API/network request atau dependency kepada `dashboard_summary`; baki hari/jam/minit/saat semasa event.
 - [x] **HARI X / 31** dan progress masa: sebelum event hari 0 / 0%, semasa event hari 1–31 dan elapsed event time, selepas event hari 31 / 100%.
@@ -56,7 +56,7 @@ Semua enhancement ini ialah **read-only / progressive enhancement**. Countdown, 
 
 Generic countdown `failSafely()` hide countdown units dan event progress jika wujud supaya stale event information tidak ditinggalkan. Event-progress failure diasingkan daripada countdown; logo mempunyai fallback. Semua kegagalan tersebut tidak menjejaskan participant app.
 
-Backend/GAS/API contract tidak berubah; backend production kekal **Apps Script Version 8**. Flow berikut tidak diubah dalam release Dashboard ini:
+Release Dashboard UI Refresh 4 October 2026 tidak mengubah backend/API dan ketika itu menggunakan **Apps Script Version 8** (historical context). Backend production semasa ialah **Version 9**. Flow berikut tidak diubah dalam release Dashboard ini:
 
 - participant login;
 - screenshot compression;
@@ -66,18 +66,18 @@ Backend/GAS/API contract tidak berubah; backend production kekal **Apps Script V
 - cancel PENDING;
 - admin/moderation.
 
-### Top 5 Mengikut Jantina — verified (6 October 2026)
+### Top 5 Mengikut Jantina — production verification PASS (6 October 2026)
 
-Berdasarkan pengesahan production yang dilaporkan:
+- Frontend release **`082e15d — feat: add top 5 gender rankings`** telah push ke `main`; GitHub Pages production **DEPLOYED AND VERIFIED**.
+- Apps Script production **Version 9** menambah field read-only `jantina` pada item `leaderboard` dalam `dashboard_summary`.
+- Production endpoint verified: canonical **`LELAKI` / `PEREMPUAN`**; kesemua **35 peserta aktif** mempunyai canonical gender valid semasa verification.
+- Production Dashboard verified dengan data live. Paparan **TOP 5 MENGIKUT JANTINA**, subteks **Kedudukan berdasarkan jumlah KM SAH**, kolum **LELAKI / WANITA**. `WANITA` ialah display label sahaja; backend/filter kekal `PEREMPUAN`.
+- Top 5 setiap jantina mengekalkan ordering leaderboard rasmi dan mengambil lima peserta pertama setiap kumpulan. Overall leaderboard, Top 3, KM SAH dan Ranking Rumah Sukan tidak berubah.
+- HIJAU masih menggunakan fallback badge. Watermark KEVITU **10% verified di production**; visual production desktop **PASS**.
+- Automated feature tests **17/17 PASS**; `node --check assets/js/app.js` **PASS**; `git diff --check` **PASS**.
+- Release complete untuk skop semasa. Rekod production verification ini berdasarkan pengesahan release yang diberikan.
 
-- [x] Apps Script production **Version 9** menambah field read-only `jantina` pada setiap item `leaderboard` dalam `dashboard_summary`.
-- [x] Top 5 Mengikut Jantina verified menggunakan production endpoint.
-- [x] Kesemua **35 peserta aktif** mempunyai canonical gender valid (`LELAKI` / `PEREMPUAN`) semasa verification.
-- [x] Desktop/local visual verification **PASS**.
-- [x] Keseluruhan leaderboard, Top 3 Individu, jumlah KM SAH dan Ranking Rumah Sukan tidak berubah.
-- [x] Tajuk **TOP 5 MENGIKUT JANTINA**, subteks **Kedudukan berdasarkan jumlah KM SAH**, kolum **LELAKI / WANITA**. `WANITA` ialah label paparan sahaja; backend/API/filter kekal `LELAKI` / `PEREMPUAN`.
-
-Rujuk [nota audit](TOP5_GENDER_REVIEW.md). Catatan Version 8 di bawah ialah sejarah release terdahulu; status production semasa ialah Version 9.
+Rujuk [nota production verification](TOP5_GENDER_REVIEW.md). Rekod Version 8 di bawah ialah historical context bagi release terdahulu.
 
 ### Verification frontend terdahulu — PASS (5 October 2026)
 
@@ -234,14 +234,16 @@ Rekod lama boleh mempunyai `SUBMISSION_ID` kosong. Rekod baharu selepas Version 
 - `144ee62` — tambah runner background pada Event Countdown hero.
 - `59624aa` — tambah logo Rumah Sukan pada Top 3 Individu dan kemaskan aset BIRU.
 - `938bbcd` — ganti badge ranking Top 3 dengan PNG `podium_rank_1.png`, `podium_rank_2.png`, `podium_rank_3.png`.
+- `082e15d` — `feat: add top 5 gender rankings` (6 October 2026); pushed ke `main`, GitHub Pages production **DEPLOYED AND VERIFIED**, Apps Script **Version 9**.
 
 ## Roadmap dashboard
 
-IMPLEMENTED merujuk release Dashboard yang **production deployed and verified** pada 4 Oktober 2026 (`6e14457`); status PLANNED kekal belum dilaksanakan.
+Top 5 Mengikut Jantina ialah IMPLEMENTED / production deployed and verified pada 6 October 2026 (`082e15d`). IMPLEMENTED bagi Dashboard UI Refresh merujuk release yang **production deployed and verified** pada 4 Oktober 2026 (`6e14457`); status PLANNED kekal belum dilaksanakan.
 
 | Feature | Status |
 | --- | --- |
 | Dashboard UI Refresh | IMPLEMENTED dalam release ini |
+| Top 5 Mengikut Jantina | IMPLEMENTED / production deployed and verified (6 October 2026, `082e15d`) |
 | Event Countdown | IMPLEMENTED dalam release ini |
 | Event Day / Time Progress | IMPLEMENTED dalam release ini |
 | House Ranking relative comparison | IMPLEMENTED dalam release ini |
