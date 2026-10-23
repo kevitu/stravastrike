@@ -118,9 +118,14 @@ function renderParticipants() {
     section.append(heading);
     if (participants.length) {
       const list = node('ul', 'participants-list');
-      list.append(...participants.map((person) => {
+      list.append(...participants.map((person, index) => {
         const item = node('li', 'participant-item');
-        item.append(node('strong', 'participant-name-label', nameOf(person)));
+        const name = node('strong', 'participant-name-label');
+        name.append(
+          node('span', 'participant-rank', `#${index + 1}`),
+          node('span', 'participant-name', nameOf(person))
+        );
+        item.append(name);
         const score = scoreOf(person);
         if (score) {
           const details = node('span', 'participant-score');

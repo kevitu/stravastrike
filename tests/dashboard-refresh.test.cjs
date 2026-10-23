@@ -109,7 +109,7 @@ test('existing controls remain present exactly once; no community target card', 
 
 test('app.js matches reviewed participant feature baseline', () => {
   const crypto = require('node:crypto');
-  const expected = 'D0F62302AADF024D4A7D0DD0FF2F8E3BF1023530135C93C925794D8BF09693FA';
+  const expected = '7DB1D15EDD959DEEDB9582190D2D0036AE71189DBC55BE18F6CC1DF353FD78CA';
   const actual = crypto.createHash('sha256')
     .update(fs.readFileSync(path.join(root, 'assets/js/app.js')))
     .digest('hex')

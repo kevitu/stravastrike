@@ -38,7 +38,7 @@ function fixture(directory, leaderboard) {
     const section = elements['participants-groups'].children[index];
     const list = section.children.find(child => child.tag === 'ul');
     return list ? list.children.map(item => ({
-      name: item.children[0]?.textContent,
+      name: item.children[0]?.children[1]?.textContent,
       km: item.children[1]?.children[0]?.textContent,
       activities: item.children[1]?.children[1]?.textContent,
       item
@@ -97,4 +97,26 @@ test('summary API unavailable: directory remains alphabetical with no unverified
 test('equal KM uses alphabetical name as deterministic tie-break', () => {
   const { group } = fixture([directory[1], directory[0]], [score('KEV901', 10, 1), score('KEV902', 10, 2)]);
   assert.deepEqual(group(0).map(x => x.name), ['MERAH A', 'MERAH B']);
+});
+
+test('rank numbers restart at one for each sports house', () => {
+  const { elements } = fixture(directory, [
+    score('KEV901', 25, 3),
+    score('KEV902', 9, 1)
+  ]);
+
+  const sections = elements['participants-groups'].children;
+
+  for (const section of sections) {
+    const list = section.children.find(child => child.tag === 'ul');
+    if (!list) continue;
+
+    list.children.forEach((item, index) => {
+      const name = item.children[0];
+      const rank = name.children[0];
+
+      assert.equal(rank.className, 'participant-rank');
+      assert.equal(rank.textContent, `#${index + 1}`);
+    });
+  }
 });
