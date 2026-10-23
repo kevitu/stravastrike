@@ -69,7 +69,7 @@ function switchView(view, focus = true) {
   el('view-subtitle').textContent = VIEW_LABELS[view][1];
   document.title = `${VIEW_LABELS[view][0]} | STRAVA STRIKE KEVITU 2026`;
   el('dashboard-feedback').hidden = !['dashboard', 'kedudukan'].includes(view);
-  if (focus && ['dashboard', 'kedudukan'].includes(view)) loadDashboardSummary();
+  if (focus && ['dashboard', 'kedudukan', 'peserta'].includes(view)) loadDashboardSummary();
   if (view === 'aktiviti' && focus) loadActivityHistory();
   el('dashboard-actions').hidden = !['dashboard', 'aktiviti'].includes(view);
   if (view !== 'aktiviti') el('submission-pin').value = '';
@@ -88,7 +88,20 @@ function renderParticipants() {
     groups.get(houses.includes(house) ? house : 'BELUM DITETAPKAN').push(person);
   });
   const nameOf = (person) => String(person.nama ?? person.NAMA ?? '');
-  groups.forEach((participants) => participants.sort((a, b) => nameOf(a).localeCompare(nameOf(b), 'ms', { sensitivity: 'base' })));
+  // Leaderboard is computed by the existing backend using approved (SAH) activities only.
+  // Join on stable participant code, never on participant name.
+  const scores = new Map((dashboardSummary?.leaderboard ?? []).map((entry) => [String(entry.kod_peserta).trim().toUpperCase(), entry]));
+  const scoreOf = (person) => scores.get(String(person.kod_peserta ?? person.KOD_PESERTA ?? '').trim().toUpperCase());
+  groups.forEach((participants) => participants.sort((a, b) => {
+    if (dashboardSummary) {
+      const aScore = scoreOf(a);
+      const bScore = scoreOf(b);
+      // If summary is out of sync with the directory, keep unmatched entries last.
+      if (Boolean(aScore) !== Boolean(bScore)) return aScore ? -1 : 1;
+      if (aScore && bScore && aScore.total_km !== bScore.total_km) return bScore.total_km - aScore.total_km;
+    }
+    return nameOf(a).localeCompare(nameOf(b), 'ms', { sensitivity: 'base' });
+  }));
   el('participants-summary').replaceChildren(...houses.map((house, index) => {
     const summary = node('div', `house-summary house-group-${index}`);
     summary.append(node('span', '', house), node('strong', '', groups.get(house).length));
@@ -107,7 +120,14 @@ function renderParticipants() {
       const list = node('ul', 'participants-list');
       list.append(...participants.map((person) => {
         const item = node('li', 'participant-item');
-        item.append(node('strong', '', nameOf(person)));
+        item.append(node('strong', 'participant-name-label', nameOf(person)));
+        const score = scoreOf(person);
+        if (score) {
+          const details = node('span', 'participant-score');
+          details.append(node('strong', 'participant-score-km', `${score.total_km.toFixed(2)} km`),
+            node('span', 'participant-score-activities', `${score.activity_count} aktiviti`));
+          item.append(details);
+        }
         return item;
       }));
       section.append(list);
@@ -291,6 +311,7 @@ async function loadDashboardSummary(force = false) {
     if (result.ok === false || result.success === false) throw new Error('Summary unavailable');
     dashboardSummary = validateSummary(result.data ?? result);
     renderDashboard();
+    renderParticipants();
     el('dashboard-status').textContent = 'Statistik dan kedudukan berdasarkan aktiviti SAH sahaja.';
   } catch {
     if (!session || generation !== summaryGeneration) return;

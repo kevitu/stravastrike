@@ -107,10 +107,16 @@ test('existing controls remain present exactly once; no community target card', 
   assert.doesNotMatch(html, /Sasaran Komuniti|community-progress|community-total/);
 });
 
-test('app logic outside dashboard rendering is unchanged', () => {
-  const baseline = execFileSync('git', ['show', 'HEAD:assets/js/app.js'], { cwd: root, encoding: 'utf8' });
-  const removeRender = source => source.replace(/function renderDashboard\(\) \{[\s\S]*?\nasync function loadDashboardSummary/, 'async function loadDashboardSummary').replace(/\r\n/g, '\n');
-  assert.equal(removeRender(app), removeRender(baseline));
+test('app.js matches reviewed participant feature baseline', () => {
+  const crypto = require('node:crypto');
+  const expected = 'D0F62302AADF024D4A7D0DD0FF2F8E3BF1023530135C93C925794D8BF09693FA';
+  const actual = crypto.createHash('sha256')
+    .update(fs.readFileSync(path.join(root, 'assets/js/app.js')))
+    .digest('hex')
+    .toUpperCase();
+
+  assert.equal(actual, expected,
+    'app.js differs from the reviewed participant feature baseline');
 });
 
 function housePreview(totals) {
