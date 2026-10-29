@@ -417,3 +417,5 @@ body:has(.dashboard:not([hidden])){background:#f1f3f8}.shell:has(.dashboard:not(
 .participant-group .participant-score-km{font-size:12px;color:#1956a8;white-space:nowrap}
 .participant-score-activities{font-size:10px;color:#526079;white-space:nowrap}
 @media(max-width:420px){.participant-group .participant-item{align-items:flex-start}.participant-score{min-width:77px}.participant-group .participant-name-label{font-size:11px}}
+
+/* strava-esijil-3d styles live in assets/css/esijil-participant.css */

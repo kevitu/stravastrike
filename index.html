@@ -66,7 +66,9 @@
 </style>
   <title>Dashboard | STRAVA STRIKE KEVITU 2026</title>
   <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/esijil-participant.css">
   <script src="assets/js/app.js" defer></script>
+  <script src="assets/js/esijil-participant.js" defer></script>
 </head>
 <body class="app-booting">
   <section id="app-splash" class="app-splash" aria-label="Memulakan STRAVA STRIKE KEVITU" aria-busy="true"><div class="splash-content"><img class="splash-logo" src="assets/icon_512.png" width="150" height="150" alt="Logo STRAVA STRIKE KEVITU 2026"><p class="splash-title">STRAVA STRIKE <span>KEVITU</span></p><p class="splash-season">CABARAN SUKAN • 2026</p><div class="splash-stripes" aria-hidden="true"><i></i><i></i><i></i></div><p class="splash-motto">GERAK BERSAMA. CAPAI LEBIH.</p><span class="brand-spinner" aria-hidden="true"></span><p id="splash-status" role="status" aria-live="polite">Memuatkan...</p></div></section>
@@ -99,6 +101,7 @@
           <button type="button" data-view="kedudukan" aria-controls="view-kedudukan"><span aria-hidden="true">≡</span>Kedudukan</button>
           <button type="button" data-view="aktiviti" aria-controls="view-aktiviti"><span aria-hidden="true">↗</span>Aktiviti</button>
           <button type="button" data-view="peserta" aria-controls="view-peserta"><span aria-hidden="true">♙</span>Peserta</button>
+          <button type="button" data-view="esijil" aria-controls="view-esijil"><span aria-hidden="true">▤</span>eSIJIL</button>
         </nav>
         <p class="sidebar-edition">KEVITU<br><strong>2026</strong><span>GERAK BERSAMA</span></p>
       </aside>
@@ -193,6 +196,25 @@
         </section>
       </div>
       <section id="view-peserta" class="app-view score-card" hidden aria-labelledby="participants-title"><div class="section-heading"><h2 id="participants-title">Peserta Aktif</h2><span class="directory-tag">DIREKTORI PESERTA</span></div><p id="participants-status" class="section-note" role="status">Memuatkan peserta...</p><button id="retry-participants" type="button" class="text-button" hidden>Cuba semula</button><div id="participants-summary" class="participants-summary" aria-label="Bilangan peserta mengikut rumah sukan"></div><div id="participants-groups" class="participants-groups"></div></section>
+      <!-- strava-esijil-3d: modul Autocrat; fail closed by default -->
+      <section id="view-esijil" class="app-view score-card" hidden aria-labelledby="esijil-title">
+        <div class="section-heading"><h2 id="esijil-title">eSIJIL STRAVA STRIKE 2026</h2></div>
+        <p class="section-note">Sijil FINISHER dan Top 5 melalui Autocrat. Hanya sijil milik akaun anda.</p>
+        <p id="esijil-status" role="status" class="section-note">Sila sahkan PIN untuk menyemak sijil.</p>
+        <p id="esijil-error" class="error" role="alert" hidden></p>
+        <form id="esijil-pin-form" class="esijil-pin-form">
+          <label for="esijil-pin">Masukkan PIN peserta 4 digit</label>
+          <div class="esijil-pin-row"><input id="esijil-pin" type="password" inputmode="numeric" minlength="4" maxlength="4" pattern="[0-9]{4}" autocomplete="off" required placeholder="••••"><button id="esijil-check" class="primary" type="submit">SEMAK SIJIL</button></div>
+          <p class="hint">PIN hanya digunakan semasa sesi ini dan tidak disimpan dalam localStorage.</p>
+        </form>
+        <div id="esijil-list" class="esijil-list" aria-live="polite"></div>
+      </section>
+      <dialog id="esijil-pdf-dialog" class="esijil-pdf-dialog" aria-labelledby="esijil-pdf-title">
+        <h2 id="esijil-pdf-title">Pratonton sijil PDF</h2>
+        <p id="esijil-pdf-status" role="status" class="section-note"></p>
+        <iframe id="esijil-pdf-frame" title="Pratonton PDF sijil" hidden></iframe>
+        <div class="esijil-pdf-actions"><button id="esijil-pdf-download" class="primary" type="button" disabled>MUAT TURUN PDF</button><button id="esijil-pdf-close" class="secondary" type="button">TUTUP</button></div>
+      </dialog>
       </div>
       <svg class="sports-tracks" viewBox="0 0 500 210" aria-hidden="true" focusable="false">
         <g fill="none" stroke-width="5">

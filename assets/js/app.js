@@ -51,7 +51,8 @@ const VIEW_LABELS = {
   dashboard: ['DASHBOARD', 'Paparan keputusan semasa'],
   kedudukan: ['KEDUDUKAN', 'Kedudukan keseluruhan peserta'],
   aktiviti: ['AKTIVITI', 'Hantar aktiviti dan semak rekod anda'],
-  peserta: ['PESERTA', 'Senarai peserta aktif']
+  peserta: ['PESERTA', 'Senarai peserta aktif'],
+  esijil: ['eSIJIL', 'Sijil pencapaian peserta']
 };
 
 function switchView(view, focus = true) {
@@ -71,6 +72,7 @@ function switchView(view, focus = true) {
   el('dashboard-feedback').hidden = !['dashboard', 'kedudukan'].includes(view);
   if (focus && ['dashboard', 'kedudukan', 'peserta'].includes(view)) loadDashboardSummary();
   if (view === 'aktiviti' && focus) loadActivityHistory();
+  if (view === 'esijil' && focus) window.stravaEsijil?.onOpen();
   el('dashboard-actions').hidden = !['dashboard', 'aktiviti'].includes(view);
   if (view !== 'aktiviti') el('submission-pin').value = '';
 
@@ -459,6 +461,7 @@ function showError(message) {
 }
 
 function logout(expired = false) {
+  window.stravaEsijil?.reset();
   for (const token of Array.from(loadingTasks.keys())) endLoading(token);
   session = null;
   clearHistory();
@@ -1070,3 +1073,10 @@ if (!['PENDING', 'SAH', 'BATAL'].includes(submissionStatus)) {
 });
 el('submission-cancel').addEventListener('click', () => { if (!submissionPending) resetSubmission(); });
 el('submission-done').addEventListener('click', () => { switchView('dashboard'); });
+
+// strava-esijil-3d: limited in-page bridge; no PIN or storage access exported.
+window.stravaEsijilBridge = Object.freeze({
+  getCode: () => session?.kod_peserta || '',
+  request: (payload) => request(payload),
+  refreshSession: () => refreshActivity()
+});

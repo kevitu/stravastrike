@@ -11,6 +11,9 @@ let loginPending = false;
 let listPending = false;
 let moderationPending = false;
 let pendingActivities = [];
+let esijilReleaseState = null; // null = unknown, fail closed.
+let esijilReleaseBusy = false;
+let esijilReleaseSeq = 0;
 let confirmation = null;
 let loginGeneration = 0;
 const requests = new Set();
@@ -54,6 +57,11 @@ function logout(reason = '') {
   pendingActivities = [];
   confirmation = null;
   if (el('moderation-dialog').open) el('moderation-dialog').close();
+  esijilReleaseSeq++;
+  esijilReleaseState = null;
+  esijilReleaseBusy = false;
+  if (el('esijil-release-dialog').open) el('esijil-release-dialog').close();
+  esijilRenderStatus();
   el('pending-list').replaceChildren();
   el('pending-count').textContent = '0';
   el('admin-identity').textContent = '';
@@ -199,6 +207,80 @@ async function applyModeration() {
     if (credentials === owner) { message('admin-notice', ''); message('admin-main-error', 'Status kemas kini tidak dapat disahkan. Muat semula senarai sebelum mencuba semula.'); }
   } finally { moderationPending = false; setBusyButtons(); }
 }
+
+// eSIJIL 3B — read verified server state; fail closed on errors.
+function esijilRenderStatus() {
+  const known = esijilReleaseState !== null;
+  const badge = el('esijil-release-badge');
+  badge.textContent = !known ? 'BELUM DISEMAK' : esijilReleaseState ? 'ON' : 'OFF';
+  badge.classList.toggle('is-on', esijilReleaseState === true);
+  el('esijil-release-description').textContent = !known
+    ? 'Status tidak diketahui. Sila semak status server.'
+    : esijilReleaseState ? 'Akses metadata sijil peserta sedang dibuka.' : 'Akses sijil peserta masih ditutup.';
+  el('esijil-release-refresh').disabled = esijilReleaseBusy || !credentials;
+  el('esijil-release-toggle').disabled = esijilReleaseBusy || !known || !credentials;
+  el('esijil-release-toggle').textContent = esijilReleaseState ? 'TUTUP AKSES eSIJIL' : 'BUKA AKSES eSIJIL';
+}
+async function esijilLoadStatus() {
+  if (esijilReleaseBusy || !hasCredentials()) return;
+  esijilReleaseBusy = true;
+  esijilReleaseState = null;
+  esijilRenderStatus();
+  message('esijil-release-error', '');
+  message('esijil-release-notice', '');
+  const owner = credentials;
+  const seq = ++esijilReleaseSeq;
+  try {
+    const result = await request({ action: 'admin_esijil_status', ...owner });
+    if (credentials !== owner || seq !== esijilReleaseSeq) return;
+    if (!isSuccess(result) || typeof result.data?.released !== 'boolean') throw new Error('bad status response');
+    esijilReleaseState = result.data.released;
+  } catch {
+    if (credentials === owner && seq === esijilReleaseSeq) message('esijil-release-error', 'Status eSIJIL tidak dapat disahkan. Pastikan backend QA tersedia.');
+  } finally {
+    if (credentials === owner && seq === esijilReleaseSeq) { esijilReleaseBusy = false; esijilRenderStatus(); }
+  }
+}
+function esijilAskToggle() {
+  if (esijilReleaseBusy || esijilReleaseState === null || !hasCredentials()) return;
+  const next = !esijilReleaseState;
+  el('esijil-release-confirm-title').textContent = next ? 'Buka akses eSIJIL?' : 'Tutup akses eSIJIL?';
+  el('esijil-release-confirm-detail').textContent = next
+    ? 'Sahkan ON untuk semua peserta? Pada Fasa 3B hanya metadata sijil boleh dibaca; PDF belum tersedia.'
+    : 'Sahkan OFF? Peserta tidak lagi boleh meminta senarai sijil melalui API. Fail yang sudah dikongsi tidak ditarik balik.';
+  el('esijil-release-confirm').textContent = next ? 'YA, BUKA' : 'YA, TUTUP';
+  el('esijil-release-dialog').showModal();
+}
+async function esijilConfirmToggle() {
+  if (esijilReleaseBusy || esijilReleaseState === null || !hasCredentials()) return;
+  const desired = !esijilReleaseState;
+  el('esijil-release-dialog').close();
+  esijilReleaseBusy = true;
+  esijilRenderStatus();
+  message('esijil-release-error', '');
+  message('esijil-release-notice', '');
+  const owner = credentials;
+  const seq = ++esijilReleaseSeq;
+  try {
+    const result = await request({ action: 'admin_esijil_set', ...owner, released: desired });
+    if (credentials !== owner || seq !== esijilReleaseSeq) return;
+    if (!isSuccess(result) || result.data?.released !== desired) throw new Error('unconfirmed write');
+    // Verify with a second backend read rather than trusting a local toggle.
+    const check = await request({ action: 'admin_esijil_status', ...owner });
+    if (credentials !== owner || seq !== esijilReleaseSeq) return;
+    if (!isSuccess(check) || check.data?.released !== desired) throw new Error('unconfirmed readback');
+    esijilReleaseState = desired;
+    message('esijil-release-notice', desired ? 'Metadata eSIJIL telah dibuka (PDF belum tersedia).' : 'Akses eSIJIL telah ditutup.');
+  } catch {
+    if (credentials === owner && seq === esijilReleaseSeq) {
+      esijilReleaseState = null; // Unknown after network failure; do not infer OFF.
+      message('esijil-release-error', 'Keputusan perubahan tidak dapat disahkan. Tekan SEMAK STATUS sebelum tindakan lain.');
+    }
+  } finally {
+    if (credentials === owner && seq === esijilReleaseSeq) { esijilReleaseBusy = false; esijilRenderStatus(); }
+  }
+}
+
 el('admin-login-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   if (loginPending) return;
@@ -225,10 +307,15 @@ el('admin-login-form').addEventListener('submit', async (event) => {
     el('admin-main-view').hidden = false;
     el('pending-title').focus({ preventScroll: true });
     await loadPending();
+    await esijilLoadStatus();
   } catch { if (generation === loginGeneration) message('admin-login-error', 'Pengesahan tidak dapat diselesaikan. Semak sambungan dan cuba semula.'); }
   finally { candidate.admin_pin = ''; el('admin-pin').value = ''; loginPending = false; el('admin-login-submit').disabled = false; el('admin-login-submit').textContent = 'MASUK'; el('admin-login-form').removeAttribute('aria-busy'); }
 });
 el('pending-refresh').addEventListener('click', loadPending);
+el('esijil-release-refresh').addEventListener('click', esijilLoadStatus);
+el('esijil-release-toggle').addEventListener('click', esijilAskToggle);
+el('esijil-release-confirm').addEventListener('click', esijilConfirmToggle);
+el('esijil-release-cancel').addEventListener('click', () => el('esijil-release-dialog').close());
 el('admin-logout').addEventListener('click', () => logout());
 el('confirmation-apply').addEventListener('click', applyModeration);
 el('confirmation-cancel').addEventListener('click', () => el('moderation-dialog').close());
