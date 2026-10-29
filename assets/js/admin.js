@@ -216,7 +216,7 @@ function esijilRenderStatus() {
   badge.classList.toggle('is-on', esijilReleaseState === true);
   el('esijil-release-description').textContent = !known
     ? 'Status tidak diketahui. Sila semak status server.'
-    : esijilReleaseState ? 'Akses metadata sijil peserta sedang dibuka.' : 'Akses sijil peserta masih ditutup.';
+    : esijilReleaseState ? 'Akses eSIJIL peserta sedang dibuka.' : 'Akses sijil peserta masih ditutup.';
   el('esijil-release-refresh').disabled = esijilReleaseBusy || !credentials;
   el('esijil-release-toggle').disabled = esijilReleaseBusy || !known || !credentials;
   el('esijil-release-toggle').textContent = esijilReleaseState ? 'TUTUP AKSES eSIJIL' : 'BUKA AKSES eSIJIL';
@@ -236,7 +236,7 @@ async function esijilLoadStatus() {
     if (!isSuccess(result) || typeof result.data?.released !== 'boolean') throw new Error('bad status response');
     esijilReleaseState = result.data.released;
   } catch {
-    if (credentials === owner && seq === esijilReleaseSeq) message('esijil-release-error', 'Status eSIJIL tidak dapat disahkan. Pastikan backend QA tersedia.');
+    if (credentials === owner && seq === esijilReleaseSeq) message('esijil-release-error', 'Status eSIJIL tidak dapat disahkan. Sila cuba lagi.');
   } finally {
     if (credentials === owner && seq === esijilReleaseSeq) { esijilReleaseBusy = false; esijilRenderStatus(); }
   }
@@ -246,7 +246,7 @@ function esijilAskToggle() {
   const next = !esijilReleaseState;
   el('esijil-release-confirm-title').textContent = next ? 'Buka akses eSIJIL?' : 'Tutup akses eSIJIL?';
   el('esijil-release-confirm-detail').textContent = next
-    ? 'Sahkan ON untuk semua peserta? Pada Fasa 3B hanya metadata sijil boleh dibaca; PDF belum tersedia.'
+    ? 'Buka akses eSIJIL kepada semua peserta yang layak?'
     : 'Sahkan OFF? Peserta tidak lagi boleh meminta senarai sijil melalui API. Fail yang sudah dikongsi tidak ditarik balik.';
   el('esijil-release-confirm').textContent = next ? 'YA, BUKA' : 'YA, TUTUP';
   el('esijil-release-dialog').showModal();
@@ -270,7 +270,7 @@ async function esijilConfirmToggle() {
     if (credentials !== owner || seq !== esijilReleaseSeq) return;
     if (!isSuccess(check) || check.data?.released !== desired) throw new Error('unconfirmed readback');
     esijilReleaseState = desired;
-    message('esijil-release-notice', desired ? 'Metadata eSIJIL telah dibuka (PDF belum tersedia).' : 'Akses eSIJIL telah ditutup.');
+    message('esijil-release-notice', desired ? 'Akses eSIJIL telah dibuka.' : 'Akses eSIJIL telah ditutup.');
   } catch {
     if (credentials === owner && seq === esijilReleaseSeq) {
       esijilReleaseState = null; // Unknown after network failure; do not infer OFF.
