@@ -229,6 +229,7 @@ const colors = { MERAH: 'red', BIRU: 'blue', HIJAU: 'green', KUNING: 'yellow' };
 const houseLogos = {
   MERAH: 'assets/img/rumah_merah.png',
   BIRU: 'assets/img/rumah_biru.jpeg',
+  HIJAU: 'assets/img/rumah-hijau.png',
   KUNING: 'assets/img/rumah_kuning.png'
 };
 
