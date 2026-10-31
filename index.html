@@ -255,7 +255,7 @@
       const fields = ['days', 'hours', 'minutes', 'seconds'].map(unit => document.getElementById(`countdown-${unit}`));
       if (!hero || !status || !units || !message || fields.some(field => !field)) return;
       const start = Date.parse('2026-10-01T00:00:00+08:00');
-      const end = Date.parse('2026-10-31T22:00:00+08:00');
+      const end = Date.parse('2026-11-01T00:00:00+08:00');
       function updateEventProgress(now) {
         try {
           const container = document.getElementById('event-progress');
@@ -298,7 +298,7 @@
           } else {
             if (stateChanged) {
               status.textContent = 'PENGHANTARAN AKTIVITI DIBUKA';
-              message.textContent = 'Hantar aktiviti sebelum jam 10 malam, 31 Oktober 2026.';
+              message.textContent = 'Penghantaran aktiviti dilanjutkan hingga 12:00 tengah malam, 1 November 2026.';
             }
             const remaining = Math.ceil((end - now) / 1000);
             const values = [Math.floor(remaining / 86400), Math.floor(remaining / 3600) % 24, Math.floor(remaining / 60) % 60, remaining % 60];
