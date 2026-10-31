@@ -138,8 +138,8 @@
           <p id="event-message" class="event-message">Gerak bersama. Capai lebih.</p>
         </div>
         <div class="event-clock">
-          <p class="countdown-label">BAKI MASA EVENT</p>
-          <div id="countdown-units" class="countdown-units" role="timer" aria-live="off" aria-label="Baki masa hingga 1 November 2026, 00:00 waktu Malaysia" hidden>
+          <p class="countdown-label">BAKI MASA HANTAR AKTIVITI</p>
+          <div id="countdown-units" class="countdown-units" role="timer" aria-live="off" aria-label="Baki masa penghantaran aktiviti hingga 31 Oktober 2026, 22:00 waktu Malaysia" hidden>
             <div class="countdown-unit"><strong id="countdown-days">—</strong><span>HARI</span></div>
             <div class="countdown-unit"><strong id="countdown-hours">—</strong><span>JAM</span></div>
             <div class="countdown-unit"><strong id="countdown-minutes">—</strong><span>MINIT</span></div>
@@ -149,7 +149,7 @@
             <p id="event-day" class="event-day">HARI — / 31</p>
             <progress id="event-time-progress" max="100" value="0" aria-label="Progress masa event Oktober 2026"></progress>
           </div>
-          <p class="event-clock-note">Tamat sebelum 1 November 2026, 00:00 MYT</p>
+          <p class="event-clock-note">Penghantaran ditutup 31 Oktober 2026, 22:00 MYT</p>
         </div>
       </section>
       <div id="stats-grid" class="stats-grid" aria-label="Statistik semasa"></div>
@@ -255,7 +255,7 @@
       const fields = ['days', 'hours', 'minutes', 'seconds'].map(unit => document.getElementById(`countdown-${unit}`));
       if (!hero || !status || !units || !message || fields.some(field => !field)) return;
       const start = Date.parse('2026-10-01T00:00:00+08:00');
-      const end = Date.parse('2026-11-01T00:00:00+08:00');
+      const end = Date.parse('2026-10-31T22:00:00+08:00');
       function updateEventProgress(now) {
         try {
           const container = document.getElementById('event-progress');
@@ -290,15 +290,15 @@
             }
           } else if (state === 'ended') {
             if (stateChanged) {
-              status.textContent = 'STRAVA STRIKE KEVITU 2026 TAMAT';
-              message.textContent = 'Terima kasih kerana bergerak bersama sepanjang Oktober.';
+              status.textContent = 'PENGHANTARAN AKTIVITI DITUTUP';
+              message.textContent = 'Penghantaran aktiviti ditutup. Semakan keputusan masih boleh diteruskan.';
             }
             stop();
             return false;
           } else {
             if (stateChanged) {
-              status.textContent = 'SEDANG BERLANGSUNG';
-              message.textContent = 'Masih ada masa untuk terus bergerak. Jom kekal aktif!';
+              status.textContent = 'PENGHANTARAN AKTIVITI DIBUKA';
+              message.textContent = 'Hantar aktiviti sebelum jam 10 malam, 31 Oktober 2026.';
             }
             const remaining = Math.ceil((end - now) / 1000);
             const values = [Math.floor(remaining / 86400), Math.floor(remaining / 3600) % 24, Math.floor(remaining / 60) % 60, remaining % 60];
