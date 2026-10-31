@@ -3,6 +3,28 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbylWG4JXS3Yg-5fyujcEpQ7vd_qWt8tO8FY_vGpiEZ3UXGbxmR07Vsl_qJH2iMGnMfvWQ/exec';
 const SESSION_KEY = 'strava_strike_participant_v1';
 const IDLE_TIMEOUT = 12 * 60 * 60 * 1000;
+
+// STRAVA STRIKE 2026: submission cutoff at 10 PM MYT
+const SUBMISSION_CUTOFF_MS =
+  Date.parse('2026-10-31T22:00:00+08:00');
+
+function isSubmissionClosed() {
+  return Date.now() >= SUBMISSION_CUTOFF_MS;
+}
+
+function syncSubmissionCutoff() {
+  const closed = isSubmissionClosed();
+  const button = el('activity-button');
+  button.hidden = closed;
+  button.disabled = closed;
+  button.style.display = closed ? 'none' : '';
+
+  if (closed) {
+    el('submission-panel').hidden = true;
+    el('activity-fields').disabled = true;
+  }
+  return closed;
+}
 const el = (id) => document.getElementById(id);
 let appBooting = true;
 const loadingTasks = new Map();
@@ -74,6 +96,7 @@ function switchView(view, focus = true) {
   if (view === 'aktiviti' && focus) loadActivityHistory();
   if (view === 'esijil' && focus) window.stravaEsijil?.onOpen();
   el('dashboard-actions').hidden = !['dashboard', 'aktiviti'].includes(view);
+  syncSubmissionCutoff();
   if (view !== 'aktiviti') el('submission-pin').value = '';
 
 
@@ -447,6 +470,7 @@ function showHome() {
   el('login-layout').hidden = true;
   el('login-brand').hidden = true;
   el('home-view').hidden = false;
+  syncSubmissionCutoff();
 
   renderParticipants();
   switchView(activeView, false);
@@ -588,7 +612,7 @@ for (const type of ['pointerdown', 'keydown', 'input', 'change', 'click', 'scrol
 }
 el('activity-button').addEventListener('click', () => {
   refreshActivity();
-  if (session) openSubmission();
+  if (session && !syncSubmissionCutoff()) openSubmission();
 });
 el('logout-button').addEventListener('click', () => logout());
 document.querySelectorAll('[data-view]').forEach((button) => {
@@ -894,6 +918,7 @@ function resetSubmission() {
   el('submission-submit').disabled = submissionPending;
 }
 function openSubmission() {
+  if (syncSubmissionCutoff()) return;
   switchView('aktiviti');
   if (!session) return;
   el('submission-success').hidden = true;
@@ -979,6 +1004,7 @@ function apiSubmissionError(result) {
 el('activity-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   if (submissionPending) return;
+  if (syncSubmissionCutoff()) return;
   refreshActivity();
   if (!session) return;
   el('submission-error').hidden = true;
@@ -1028,6 +1054,7 @@ try {
     return;
   }
 
+  if (syncSubmissionCutoff()) return;
   const result = await request(payload);
 
   if (session !== owner) return;
@@ -1065,14 +1092,22 @@ if (!['PENDING', 'SAH', 'BATAL'].includes(submissionStatus)) {
     if (payload) { payload.pin = ''; payload.screenshot_base64 = ''; payload = null; }
     el('submission-pin').value = '';
     submissionPending = false;
-    el('activity-fields').disabled = false;
-    el('submission-submit').disabled = compressionPending;
+    el('activity-fields').disabled = isSubmissionClosed();
+    el('submission-submit').disabled = compressionPending || isSubmissionClosed();
+    syncSubmissionCutoff();
     el('submission-submit').textContent = 'HANTAR AKTIVITI';
     el('activity-form').removeAttribute('aria-busy');
   }
 });
 el('submission-cancel').addEventListener('click', () => { if (!submissionPending) resetSubmission(); });
 el('submission-done').addEventListener('click', () => { switchView('dashboard'); });
+
+// Enforce cutoff for sessions already open
+syncSubmissionCutoff();
+setInterval(syncSubmissionCutoff, 1000);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) syncSubmissionCutoff();
+});
 
 // strava-esijil-3d: limited in-page bridge; no PIN or storage access exported.
 window.stravaEsijilBridge = Object.freeze({
