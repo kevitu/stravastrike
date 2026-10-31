@@ -4,9 +4,9 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbylWG4JXS3Yg-5fyujcEpQ7
 const SESSION_KEY = 'strava_strike_participant_v1';
 const IDLE_TIMEOUT = 12 * 60 * 60 * 1000;
 
-// STRAVA STRIKE 2026: submission cutoff at midnight MYT, 1 Nov 2026
+// STRAVA STRIKE 2026: submission cutoff at 5:00 PM MYT, 2 Nov 2026
 const SUBMISSION_CUTOFF_MS =
-  Date.parse('2026-11-01T00:00:00+08:00');
+  Date.parse('2026-11-02T17:00:00+08:00');
 
 function isSubmissionClosed() {
   return Date.now() >= SUBMISSION_CUTOFF_MS;
